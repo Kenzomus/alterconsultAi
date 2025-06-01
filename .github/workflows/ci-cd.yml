@@ -1,0 +1,90 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: drupal
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, curl, gd, intl, mysql, pdo, zip
+        coverage: xdebug
+
+    - name: Install Composer Dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Setup Drupal
+      run: |
+        cp web/sites/default/default.settings.php web/sites/default/settings.php
+        cp web/sites/default/default.services.yml web/sites/default/services.yml
+        mkdir -p web/sites/default/files
+        chmod -R 777 web/sites/default/files
+
+    - name: Run PHPUnit Tests
+      run: |
+        ./vendor/bin/phpunit --configuration web/core/phpunit.xml.dist web/modules/custom
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: Install Composer Dependencies
+      run: composer install --prefer-dist --no-dev --optimize-autoloader
+
+    - name: Deploy to Pantheon
+      if: ${{ secrets.PANTHEON_SITE_UUID }}
+      env:
+        PANTHEON_SITE_UUID: ${{ secrets.PANTHEON_SITE_UUID }}
+        PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+      run: |
+        composer require pantheon-systems/terminus
+        ./vendor/bin/terminus auth:login --machine-token=$PANTHEON_MACHINE_TOKEN
+        ./vendor/bin/terminus build:env:push $PANTHEON_SITE_UUID.dev
+
+    - name: Deploy to Acquia
+      if: ${{ secrets.ACQUIA_KEY }}
+      env:
+        ACQUIA_KEY: ${{ secrets.ACQUIA_KEY }}
+        ACQUIA_SECRET: ${{ secrets.ACQUIA_SECRET }}
+        ACQUIA_APP_NAME: ${{ secrets.ACQUIA_APP_NAME }}
+      run: |
+        composer require acquia/blt
+        ./vendor/bin/blt deploy --environment=dev
+
+    - name: Deploy to AWS
+      if: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      run: |
+        aws s3 sync web/ s3://${{ secrets.AWS_S3_BUCKET }}/
+        aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_ID }} --paths "/*"

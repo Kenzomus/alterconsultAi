@@ -1,0 +1,49 @@
+# Drupal specific
+/vendor/
+/web/core/
+/web/modules/contrib/
+/web/themes/contrib/
+/web/libraries/
+/web/sites/*/files/
+/web/sites/*/private/
+/web/sites/*/translations/
+/web/sites/*/settings.local.php
+/web/sites/*/services.local.yml
+
+# Composer
+composer.phar
+/vendor/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build files
+/web/sites/default/files/
+/web/sites/default/private/
+/web/sites/default/tmp/
+/web/sites/default/translations/
+/web/sites/default/settings.local.php
+/web/sites/default/services.local.yml

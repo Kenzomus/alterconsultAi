@@ -1,0 +1,63 @@
+name: Staging Deployment
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: drupal
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, curl, gd, intl, mysql, pdo, zip
+        coverage: xdebug
+
+    - name: Install Composer Dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run Tests
+      run: |
+        ./vendor/bin/phpunit --configuration web/core/phpunit.xml.dist web/modules/custom
+        ./vendor/bin/phpcs --standard=Drupal web/modules/custom
+        ./vendor/bin/phpstan analyse web/modules/custom
+
+  deploy-staging:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: Install Composer Dependencies
+      run: composer install --prefer-dist --no-dev --optimize-autoloader
+
+    - name: Deploy to Staging
+      env:
+        PANTHEON_SITE_UUID: ${{ secrets.PANTHEON_SITE_UUID }}
+        PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+      run: |
+        composer require pantheon-systems/terminus
+        ./vendor/bin/terminus auth:login --machine-token=$PANTHEON_MACHINE_TOKEN
+        ./vendor/bin/terminus build:env:push $PANTHEON_SITE_UUID.test
