@@ -3,6 +3,12 @@
     "description": "Alter-Consult.com professional services website",
     "type": "project",
     "license": "GPL-2.0-or-later",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
     "require": {
         "php": ">=8.2",
         "composer/installers": "^2.0",
