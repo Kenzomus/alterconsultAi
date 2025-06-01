@@ -19,7 +19,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.3'
           extensions: mbstring, xml, ctype, iconv, intl, pdo, dom, filter, gd, json, mbstring, session, simplexml, tokenizer, xml, xmlreader, xmlwriter, zip, curl, fileinfo, pdo_mysql, soap, sodium, bcmath, calendar, exif, ftp, gettext, mysqli, opcache, sockets, sysvmsg, sysvsem, sysvshm, wddx, xsl, zlib
           coverage: xdebug
 
@@ -50,6 +50,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, dom, filter, gd, json, mbstring, session, simplexml, tokenizer, xml, xmlreader, xmlwriter, zip, curl, fileinfo, pdo_mysql, soap, sodium, bcmath, calendar, exif, ftp, gettext, mysqli, opcache, sockets, sysvmsg, sysvsem, sysvshm, wddx, xsl, zlib
 
       - name: Set up Terminus
         run: |
