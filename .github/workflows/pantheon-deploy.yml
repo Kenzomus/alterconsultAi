@@ -29,6 +29,9 @@ jobs:
       - name: Clear Composer Cache
         run: composer clear-cache
 
+      - name: Update composer.lock
+        run: composer update --no-install --ignore-platform-reqs
+
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --ignore-platform-reqs
 
@@ -62,6 +65,9 @@ jobs:
 
       - name: Clear Composer Cache (Deploy Job)
         run: composer clear-cache
+
+      - name: Update composer.lock (Deploy Job)
+        run: composer update --no-install --ignore-platform-reqs
 
       - name: Install Dependencies (Deploy Job)
         run: composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
