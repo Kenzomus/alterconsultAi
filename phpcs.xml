@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<ruleset name="Drupal">
+  <description>Drupal Coding Standards</description>
+
+  <file>.</file>
+  <exclude-pattern>*/vendor/*</exclude-pattern>
+  <exclude-pattern>*/node_modules/*</exclude-pattern>
+  <exclude-pattern>*/sites/*/files/*</exclude-pattern>
+  <exclude-pattern>*/sites/*/translations/*</exclude-pattern>
+  <exclude-pattern>*/sites/*/private/*</exclude-pattern>
+  <exclude-pattern>*/sites/*/tmp/*</exclude-pattern>
+
+  <arg name="extensions" value="php,module,inc,install,test,profile,theme,css,info,txt,md,yml"/>
+  <arg name="colors"/>
+  <arg value="sp"/>
+
+  <rule ref="Drupal">
+    <exclude name="Drupal.Commenting.DocComment.MissingShort"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingBefore"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingAfter"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingBeforeTags"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingAfterTags"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingBeforeTags"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingAfterTags"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingBeforeTags"/>
+    <exclude name="Drupal.Commenting.DocComment.SpacingAfterTags"/>
+  </rule>
+
+  <rule ref="DrupalPractice">
+    <exclude name="DrupalPractice.Commenting.CommentEmptyLine.SpacingAfter"/>
+    <exclude name="DrupalPractice.Commenting.CommentEmptyLine.SpacingBefore"/>
+  </rule>
+
+  <rule ref="Generic.Files.LineLength">
+    <properties>
+      <property name="lineLimit" value="120"/>
+      <property name="absoluteLineLimit" value="120"/>
+    </properties>
+  </rule>
+
+  <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace">
+    <properties>
+      <property name="ignoreBlankLines" value="true"/>
+    </properties>
+  </rule>
+</ruleset>
