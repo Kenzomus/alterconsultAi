@@ -23,6 +23,9 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo, dom, filter, gd, json, mbstring, session, simplexml, tokenizer, xml, xmlreader, xmlwriter, zip, curl, fileinfo, pdo_mysql, soap, sodium, bcmath, calendar, exif, ftp, gettext, mysqli, opcache, sockets, sysvmsg, sysvsem, sysvshm, wddx, xsl, zlib
           coverage: xdebug
 
+      - name: Check PHP Version
+        run: php -v
+
       - name: Clear Composer Cache
         run: composer clear-cache
 
