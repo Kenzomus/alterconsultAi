@@ -27,7 +27,7 @@ jobs:
         run: composer clear-cache
 
       - name: Install Dependencies
-        run: composer install --prefer-dist --no-progress --with-all-dependencies
+        run: composer install --prefer-dist --no-progress --with-all-dependencies --ignore-platform-reqs
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit
@@ -61,7 +61,7 @@ jobs:
         run: composer clear-cache
 
       - name: Install Dependencies (Deploy Job)
-        run: composer install --prefer-dist --no-dev --optimize-autoloader --with-all-dependencies
+        run: composer install --prefer-dist --no-dev --optimize-autoloader --with-all-dependencies --ignore-platform-reqs
 
       - name: Set up Terminus
         run: |
