@@ -30,13 +30,13 @@ jobs:
         run: composer clear-cache
 
       - name: Update composer.lock (test job)
-        run: composer update --no-install --ignore-platform-reqs --no-verify
+        run: composer update --no-install --ignore-platform-reqs
 
       - name: Allow Pheanstalk bundle plugin (test job)
         run: composer config --no-plugins allow-plugins.pheanstalk/pheanstalk-bundle true
 
       - name: Install Dependencies (test job)
-        run: composer install --prefer-dist --no-progress --ignore-platform-reqs --no-verify
+        run: composer install --prefer-dist --no-progress --ignore-platform-reqs
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit
@@ -70,13 +70,13 @@ jobs:
         run: composer clear-cache
 
       - name: Update composer.lock (Deploy Job)
-        run: composer update --no-install --ignore-platform-reqs --no-verify
+        run: composer update --no-install --ignore-platform-reqs
 
       - name: Allow Pheanstalk bundle plugin (Deploy Job)
         run: composer config --no-plugins allow-plugins.pheanstalk/pheanstalk-bundle true
 
       - name: Install Dependencies (Deploy Job)
-        run: composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs --no-verify
+        run: composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
 
       - name: Set up Terminus
         run: |
