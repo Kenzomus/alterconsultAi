@@ -35,6 +35,9 @@ jobs:
       - name: Allow Pheanstalk bundle plugin (test job)
         run: composer config --no-plugins allow-plugins.pheanstalk/pheanstalk-bundle true
 
+      - name: Allow PHPStan extension installer plugin (test job)
+        run: composer config --no-plugins allow-plugins.phpstan/extension-installer true
+
       - name: Install Dependencies (test job)
         run: composer install --prefer-dist --no-progress --ignore-platform-reqs
 
@@ -74,6 +77,9 @@ jobs:
 
       - name: Allow Pheanstalk bundle plugin (Deploy Job)
         run: composer config --no-plugins allow-plugins.pheanstalk/pheanstalk-bundle true
+
+      - name: Allow PHPStan extension installer plugin (Deploy Job)
+        run: composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
       - name: Install Dependencies (Deploy Job)
         run: composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
