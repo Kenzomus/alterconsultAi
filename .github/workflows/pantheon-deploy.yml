@@ -1,128 +1,96 @@
-name: Test and Deploy to Pantheon Dev
+name: Deploy to Pantheon Dev
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    types: [closed]
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  test:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Manual PHP 8.3 Setup
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Run performance tests
+        run: npm run test:performance
+
+      - name: Git config
         run: |
-          sudo apt-get update
-          sudo apt-get install -y software-properties-common
-          sudo add-apt-repository -y ppa:ondrej/php
-          sudo apt-get update
-          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-json php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-sodium php8.3-bcmath php8.3-calendar php8.3-exif php8.3-ftp php8.3-gettext php8.3-mysqli php8.3-sockets php8.3-xsl
-          sudo update-alternatives --set php /usr/bin/php8.3
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
 
-      - name: Check PHP Version
-        run: php -v
+      - name: Pull latest & rebase
+        run: git pull origin main --rebase
 
-      - name: Clear Composer Cache
-        run: composer clear-cache
+      - name: Push back (optional)
+        run: git push origin HEAD:main
 
-      - name: Update composer.lock
-        run: composer update --no-install --ignore-platform-reqs --no-verify
-
-      - name: Allow Pheanstalk bundle plugin
-        run: composer config --no-plugins allow-plugins.pheanstalk/pheanstalk-bundle true
-
-      - name: Install Dependencies
-        run: composer install --prefer-dist --no-progress --ignore-platform-reqs --no-verify
-
-      - name: Run PHPUnit tests
-        run: vendor/bin/phpunit
-
-      - name: Run PHPCS
-        run: vendor/bin/phpcs
-
-      - name: Run PHPStan
-        run: vendor/bin/phpstan analyse
-
-      - name: Run Security Check
-        run: vendor/bin/security-checker security:check
-
-  deploy:
-    needs: test
-    if: github.event.pull_request.merged == true || github.event_name == 'push'
-    runs-on: ubuntu-latest
-    environment:
-      name: dev
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Manual PHP 8.3 Setup (Deploy Job)
+      - name: Push to Pantheon Git
+        env:
+          PANTHEON_GIT_URL: ${{ secrets.PANTHEON_GIT_URL }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y software-properties-common
-          sudo add-apt-repository -y ppa:ondrej/php
-          sudo apt-get update
-          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-json php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-sodium php8.3-bcmath php8.3-calendar php8.3-exif php8.3-ftp php8.3-gettext php8.3-mysqli php8.3-sockets php8.3-xsl
-          sudo update-alternatives --set php /usr/bin/php8.3
+          git remote add pantheon "$PANTHEON_GIT_URL"
+          git push pantheon main
 
-      - name: Clear Composer Cache (Deploy Job)
-        run: composer clear-cache
-
-      - name: Update composer.lock (Deploy Job)
-        run: composer update --no-install --ignore-platform-reqs --no-verify
-
-      - name: Allow Pheanstalk bundle plugin (Deploy Job)
-        run: composer config --no-plugins allow-plugins.pheanstalk/pheanstalk-bundle true
-
-      - name: Install Dependencies (Deploy Job)
-        run: composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs --no-verify
-
-      - name: Set up Terminus
+      - name: Install Terminus CLI
         run: |
-          curl -O https://github.com/pantheon-systems/terminus/releases/download/3.0.0/terminus.phar
+          curl -O https://github.com/pantheon-systems/terminus/releases/latest/download/terminus.phar
           chmod +x terminus.phar
           sudo mv terminus.phar /usr/local/bin/terminus
 
-      - name: Authenticate with Pantheon
-        run: terminus auth:login --machine-token=${{ secrets.PANTHEON_MACHINE_TOKEN }}
-
-      - name: Push code to Pantheon Dev
-        run: |
-          git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
-          git push pantheon main:master --force
-
-      - name: Clear Pantheon cache
-        run: terminus env:clear-cache ${{ secrets.PANTHEON_SITE }}.dev
-
-      - name: Run database updates
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- updb -y
-
-      - name: Import configuration
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cim -y
-
-      - name: Clear cache after updates
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cr
-
-      - name: Run cron
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cron
-
-      - name: Check site status
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- status
-
-      - name: Run security updates check
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- pm:security-check
-
-      - name: Notify on Slack
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      - name: Authenticate Terminus
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TERMINUS_MACHINE_TOKEN: ${{ secrets.TERMINUS_MACHINE_TOKEN }}
+        run: terminus auth:login --machine-token="$TERMINUS_MACHINE_TOKEN"
+
+      - name: Deploy to Pantheon Dev
+        run: |
+          terminus env:deploy ${{ secrets.PANTHEON_SITE_NAME }}.dev --note="Auto-deployed from GitHub Actions"
+
+      - name: Clear Cache and Run DB Updates
+        run: |
+          terminus drush ${{ secrets.PANTHEON_SITE_NAME }}.dev -- cr
+          terminus drush ${{ secrets.PANTHEON_SITE_NAME }}.dev -- updb -y
+
+      - name: Post PR Preview Comment
+        if: github.event_name == 'pull_request'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COMMENT="🚀 Pantheon Dev deployed: https://${{ secrets.PANTHEON_SITE_NAME }}-dev.pantheonsite.io"
+          gh pr comment "$PR_NUMBER" --body "$COMMENT"
+
+      - name: Slack Notification
         if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: 'GitHub Actions'
+          SLACK_ICON: ':rocket:'
+          SLACK_MESSAGE: |
+            *${{ job.status == 'success' && '✅ DEPLOY SUCCESS' || '❌ DEPLOY FAILED' }}*
+            Repo: ${{ github.repository }}
+            Branch: ${{ github.ref }}
+            Actor: ${{ github.actor }}
+            Env: Dev
+            URL: https://${{ secrets.PANTHEON_SITE_NAME }}-dev.pantheonsite.io
