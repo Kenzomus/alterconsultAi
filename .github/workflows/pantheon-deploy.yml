@@ -26,6 +26,11 @@ jobs:
       - name: Check PHP Version
         run: php -v
 
+      - name: Git config (test job)
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
       - name: Clear Composer Cache
         run: composer clear-cache
 
