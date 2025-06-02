@@ -19,7 +19,7 @@ jobs:
       - name: Set up PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.3.x'
           extensions: mbstring, xml, ctype, iconv, intl, pdo, dom, filter, gd, json, mbstring, session, simplexml, tokenizer, xml, xmlreader, xmlwriter, zip, curl, fileinfo, pdo_mysql, soap, sodium, bcmath, calendar, exif, ftp, gettext, mysqli, opcache, sockets, xsl
           coverage: xdebug
 
@@ -74,7 +74,7 @@ jobs:
       - name: Set up PHP 8.3
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.3.x'
           extensions: mbstring, xml, ctype, iconv, intl, pdo, dom, filter, gd, json, mbstring, session, simplexml, tokenizer, xml, xmlreader, xmlwriter, zip, curl, fileinfo, pdo_mysql, soap, sodium, bcmath, calendar, exif, ftp, gettext, mysqli, opcache, sockets, xsl
 
       - name: Clear Composer Cache (Deploy Job)
