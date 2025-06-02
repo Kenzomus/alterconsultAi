@@ -16,7 +16,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Manual PHP 8.3 Setup
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y ppa:ondrej/php
+          sudo apt-get update
+          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-json php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-sodium php8.3-bcmath php8.3-calendar php8.3-exif php8.3-ftp php8.3-gettext php8.3-mysqli php8.3-sockets php8.3-sysvmsg sysvsem sysvshm php8.3-wddx php8.3-xsl php8.3-zlib php8.3-dom php8.3-filter php8.3-session php8.3-simplexml php8.3-tokenizer php8.3-xmlreader php8.3-xmlwriter
+          sudo update-alternatives --set php /usr/bin/php8.3
 
+      - name: Check PHP Version
+        run: php -v
 
       - name: Clear Composer Cache
         run: composer clear-cache
