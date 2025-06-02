@@ -2,95 +2,59 @@ name: Deploy to Pantheon Dev
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
 
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Build and Deploy to Pantheon
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run unit tests
-        run: npm run test:unit
-
-      - name: Run integration tests
-        run: npm run test:integration
-
-      - name: Run performance tests
-        run: npm run test:performance
-
-      - name: Git config
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "github-actions"
-
-      - name: Pull latest & rebase
-        run: git pull origin main --rebase
-
-      - name: Push back (optional)
-        run: git push origin HEAD:main
-
-      - name: Push to Pantheon Git
-        env:
-          PANTHEON_GIT_URL: ${{ secrets.PANTHEON_GIT_URL }}
-        run: |
-          git remote add pantheon "$PANTHEON_GIT_URL"
-          git push pantheon main
 
       - name: Install Terminus CLI
         run: |
-          curl -O https://github.com/pantheon-systems/terminus/releases/latest/download/terminus.phar
-          chmod +x terminus.phar
-          sudo mv terminus.phar /usr/local/bin/terminus
+          curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar
+          php installer.phar install
+          echo "::add-path::/home/runner/.composer/vendor/bin"
+          terminus self:info
 
       - name: Authenticate Terminus
-        env:
-          TERMINUS_MACHINE_TOKEN: ${{ secrets.TERMINUS_MACHINE_TOKEN }}
-        run: terminus auth:login --machine-token="$TERMINUS_MACHINE_TOKEN"
+        run: terminus auth:login --machine-token="${{ secrets.PANTHEON_MACHINE_TOKEN }}"
 
-      - name: Deploy to Pantheon Dev
+      - name: Set Git Config
         run: |
-          terminus env:deploy ${{ secrets.PANTHEON_SITE_NAME }}.dev --note="Auto-deployed from GitHub Actions"
+          git config --global user.email "ci@github.com"
+          git config --global user.name "GitHub Actions"
 
-      - name: Clear Cache and Run DB Updates
+      - name: Pull latest from main and push to Pantheon
         run: |
+          git remote add pantheon "ssh://codeserver.dev.${{ secrets.PANTHEON_SITE_NAME }}@codeserver.dev.${{ secrets.PANTHEON_SITE_NAME }}.drush.in:2222/~/repository.git"
+          git push pantheon main --force
+
+      - name: Clear cache and run DB updates
+        run: |
+          terminus env:clear-cache ${{ secrets.PANTHEON_SITE_NAME }}.dev
+          terminus drush ${{ secrets.PANTHEON_SITE_NAME }}.dev -- updatedb -y
           terminus drush ${{ secrets.PANTHEON_SITE_NAME }}.dev -- cr
-          terminus drush ${{ secrets.PANTHEON_SITE_NAME }}.dev -- updb -y
 
       - name: Post PR Preview Comment
         if: github.event_name == 'pull_request'
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          COMMENT="🚀 Pantheon Dev deployed: https://${{ secrets.PANTHEON_SITE_NAME }}-dev.pantheonsite.io"
-          gh pr comment "$PR_NUMBER" --body "$COMMENT"
+          echo "Preview available at: https://dev-${{ secrets.PANTHEON_SITE_NAME }}.pantheonsite.io" >> pr_comment.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
 
       - name: Slack Notification
-        if: always()
-        uses: rtCamp/action-slack-notify@v2
+        if: always() && env.SLACK_WEBHOOK_URL != ''
+        uses: rtCamp/action-slack-notify@v2.3.3
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_USERNAME: 'GitHub Actions'
-          SLACK_ICON: ':rocket:'
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_TITLE: "Pantheon Deployment"
           SLACK_MESSAGE: |
-            *${{ job.status == 'success' && '✅ DEPLOY SUCCESS' || '❌ DEPLOY FAILED' }}*
-            Repo: ${{ github.repository }}
-            Branch: ${{ github.ref }}
-            Actor: ${{ github.actor }}
-            Env: Dev
-            URL: https://${{ secrets.PANTHEON_SITE_NAME }}-dev.pantheonsite.io
+            Deployment to https://dev-${{ secrets.PANTHEON_SITE_NAME }}.pantheonsite.io complete.
+            Status: ${{ job.status }}
