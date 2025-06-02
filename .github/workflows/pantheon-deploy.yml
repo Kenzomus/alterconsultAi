@@ -44,7 +44,7 @@ jobs:
         run: composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
       - name: Install Dependencies (test job)
-        run: composer install --prefer-dist --no-progress --ignore-platform-reqs
+        run: ${{ env.php-path }}/php `which composer` install --prefer-dist --no-progress --ignore-platform-reqs
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit
@@ -87,7 +87,7 @@ jobs:
         run: composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
       - name: Install Dependencies (Deploy Job)
-        run: composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
+        run: ${{ env.php-path }}/php `which composer` install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
 
       - name: Set up Terminus
         run: |
