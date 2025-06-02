@@ -16,12 +16,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up PHP 8.3
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3.x'
-          extensions: mbstring, xml, ctype, iconv, intl, pdo, dom, filter, gd, json, mbstring, session, simplexml, tokenizer, xml, xmlreader, xmlwriter, zip, curl, fileinfo, pdo_mysql, soap, sodium, bcmath, calendar, exif, ftp, gettext, mysqli, opcache, sockets, xsl
-          coverage: xdebug
+      - name: Add ondrej/php PPA
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y ppa:ondrej/php
+
+      - name: Install PHP 8.3 and extensions
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-sodium php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-mysqli php8.3-pdo
 
       - name: Check PHP Version
         run: php -v
@@ -46,7 +50,7 @@ jobs:
       - name: Allow PHPStan extension installer plugin (test job)
         run: composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
-      - name: Install Composer Dependencies (test job)
+      - name: Install Dependencies (test job)
         run: composer install --prefer-dist --no-progress --ignore-platform-reqs
 
       - name: Run PHPUnit tests
@@ -71,11 +75,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up PHP 8.3
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3.x'
-          extensions: mbstring, xml, ctype, iconv, intl, pdo, dom, filter, gd, json, mbstring, session, simplexml, tokenizer, xml, xmlreader, xmlwriter, zip, curl, fileinfo, pdo_mysql, soap, sodium, bcmath, calendar, exif, ftp, gettext, mysqli, opcache, sockets, xsl
+      - name: Add ondrej/php PPA (Deploy Job)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y ppa:ondrej/php
+
+      - name: Install PHP 8.3 and extensions (Deploy Job)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-sodium php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-mysqli php8.3-pdo
 
       - name: Clear Composer Cache (Deploy Job)
         run: composer clear-cache
