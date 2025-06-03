@@ -29,6 +29,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo
 
+      - name: Set default PHP version to 8.3
+        run: sudo update-alternatives --set php /usr/bin/php8.3
+
       - name: Forcefully remove submodule configurations
         run: |
           git submodule deinit --force .
@@ -88,7 +91,10 @@ jobs:
       - name: Install PHP 8.3 and extensions (Deploy Job)
         run: |
           sudo apt-get update
-          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-sodium php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo
+          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo
+
+      - name: Set default PHP version to 8.3 (Deploy Job)
+        run: sudo update-alternatives --set php /usr/bin/php8.3
 
       - name: Clear Composer Cache (Deploy Job)
         run: composer clear-cache
