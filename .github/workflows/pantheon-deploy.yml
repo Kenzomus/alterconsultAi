@@ -21,19 +21,14 @@ jobs:
       - name: Remove .gitmodules file
         run: rm -f .gitmodules
 
-      - name: Add ondrej/php PPA
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y software-properties-common
-          sudo add-apt-repository -y ppa:ondrej/php
-
-      - name: Install PHP 8.3 and extensions
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo
-
-      - name: Set default PHP version to 8.3
-        run: sudo update-alternatives --set php /usr/bin/php8.3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: gd, opcache, xdebug, intl, mbstring, mysql, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, curl, common, cli, sodium
+          ini-values: post_max_size=256M, upload_max_filesize=256M
+          coverage: xdebug
+          tools: composer:v2
 
       - name: Clear Composer Cache
         run: composer clear-cache
@@ -53,7 +48,7 @@ jobs:
           which php
 
       - name: Install Dependencies (test job)
-        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-progress --ignore-platform-reqs
+        run: composer install --prefer-dist --no-progress --ignore-platform-reqs
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit
@@ -82,19 +77,14 @@ jobs:
       - name: Remove .gitmodules file
         run: rm -f .gitmodules
 
-      - name: Add ondrej/php PPA (Deploy Job)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y software-properties-common
-          sudo add-apt-repository -y ppa:ondrej/php
-
-      - name: Install PHP 8.3 and extensions (Deploy Job)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo
-
-      - name: Set default PHP version to 8.3 (Deploy Job)
-        run: sudo update-alternatives --set php /usr/bin/php8.3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: gd, opcache, xdebug, intl, mbstring, mysql, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, curl, common, cli, sodium
+          ini-values: post_max_size=256M, upload_max_filesize=256M
+          coverage: xdebug
+          tools: composer:v2
 
       - name: Clear Composer Cache (Deploy Job)
         run: composer clear-cache
@@ -109,7 +99,7 @@ jobs:
         run: composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
       - name: Install Dependencies (Deploy Job)
-        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
+        run: composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
 
       - name: Set up Terminus
         run: |
