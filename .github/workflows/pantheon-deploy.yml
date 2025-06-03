@@ -44,6 +44,13 @@ jobs:
       - name: Check PHP Version Before Composer (test job)
         run: php -v
 
+      - name: Diagnose PHP Environment
+        run: |
+          echo "PATH: $PATH"
+          which php
+          which composer
+          ls -l /usr/bin/php*
+
       - name: Git config (test job)
         run: |
           git config --global user.email "github-actions@github.com"
