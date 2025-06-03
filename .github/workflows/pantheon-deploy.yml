@@ -19,6 +19,12 @@ jobs:
         with:
           submodules: false
 
+      - name: Clean up Composer environment
+        run: |
+          rm -rf vendor
+          rm -f composer.lock
+          rm -rf /home/runner/.cache/composer
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -27,6 +33,22 @@ jobs:
           ini-values: post_max_size=256M, upload_max_filesize=256M
           coverage: xdebug
           tools: composer:v2
+
+      - name: Prepare Composer
+        run: |
+          composer self-update --stable
+          composer clear-cache
+          composer validate
+
+      - name: Debug PHP version and path
+        run: |
+          php -v
+          which php
+
+      - name: Debug PHP and Composer versions
+        run: |
+          php -v
+          composer --version
 
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --no-ansi
@@ -55,6 +77,12 @@ jobs:
         with:
           submodules: false
 
+      - name: Clean up Composer environment
+        run: |
+          rm -rf vendor
+          rm -f composer.lock
+          rm -rf /home/runner/.cache/composer
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -63,6 +91,17 @@ jobs:
           ini-values: post_max_size=256M, upload_max_filesize=256M
           coverage: xdebug
           tools: composer:v2
+
+      - name: Prepare Composer (Deploy Job)
+        run: |
+          composer self-update --stable
+          composer clear-cache
+          composer validate
+
+      - name: Debug PHP and Composer versions (Deploy Job)
+        run: |
+          php -v
+          composer --version
 
       - name: Install Dependencies
         run: composer install --prefer-dist --no-dev --optimize-autoloader --no-ansi
