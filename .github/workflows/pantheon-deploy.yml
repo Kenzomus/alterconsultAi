@@ -35,12 +35,6 @@ jobs:
       - name: Set default PHP version to 8.3
         run: sudo update-alternatives --set php /usr/bin/php8.3
 
-      - name: Forcefully remove submodule configurations
-        run: |
-          git submodule deinit --force .
-          git rm --cached .gitmodules || :
-          rm -f .gitmodules || :
-
       - name: Clear Composer Cache
         run: composer clear-cache
 
