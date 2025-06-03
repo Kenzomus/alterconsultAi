@@ -18,6 +18,9 @@ jobs:
         with:
           submodules: false
 
+      - name: Remove .gitmodules file
+        run: rm -f .gitmodules
+
       - name: Add ondrej/php PPA
         run: |
           sudo apt-get update
@@ -81,6 +84,9 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: false
+
+      - name: Remove .gitmodules file
+        run: rm -f .gitmodules
 
       - name: Add ondrej/php PPA (Deploy Job)
         run: |
