@@ -65,7 +65,7 @@ jobs:
         run: vendor/bin/phpstan analyse
 
       - name: Run Security Check
-        run: vendor/bin/security-checker security:check
+        run: symfony check:security
 
   deploy:
     needs: test
