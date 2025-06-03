@@ -25,14 +25,14 @@ jobs:
           rm -f composer.lock
           rm -rf /home/runner/.cache/composer
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: gd, opcache, xdebug, intl, mbstring, mysql, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, curl, common, cli, sodium
-          ini-values: post_max_size=256M, upload_max_filesize=256M
-          coverage: xdebug
-          tools: composer:v2
+      - name: Manually install PHP 8.3 and extensions
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y ppa:ondrej/php
+          sudo apt-get update
+          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo php8.3-xmlrpc php8.3-soap php8.3-sqlite3 php8.3-pgsql php8.3-redis php8.3-imagick php8.3-gmp php8.3-ldap php8.3-apcu
+          sudo update-alternatives --set php /usr/bin/php8.3
 
       - name: Prepare Composer
         run: |
@@ -83,14 +83,14 @@ jobs:
           rm -f composer.lock
           rm -rf /home/runner/.cache/composer
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: gd, opcache, xdebug, intl, mbstring, mysql, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, curl, common, cli, sodium
-          ini-values: post_max_size=256M, upload_max_filesize=256M
-          coverage: xdebug
-          tools: composer:v2
+      - name: Manually install PHP 8.3 and extensions (Deploy Job)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y ppa:ondrej/php
+          sudo apt-get update
+          sudo apt-get install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo php8.3-xmlrpc php8.3-soap php8.3-sqlite3 php8.3-pgsql php8.3-redis php8.3-imagick php8.3-gmp php8.3-ldap php8.3-apcu
+          sudo update-alternatives --set php /usr/bin/php8.3
 
       - name: Prepare Composer (Deploy Job)
         run: |
@@ -130,8 +130,8 @@ jobs:
       - name: Notify on Slack
         uses: 8398a7/action-slack@v3
         with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: always()
+          status: ${{ job.status }}\n          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took\n        env:\n          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}\n        if: always()\n```
+
+After manually replacing the content of `.github/workflows/pantheon-deploy.yml` with the code above, please save the file, commit the changes, and push to your `main` branch on GitHub. This will trigger a new workflow run.
+
+Once the workflow runs, please share the results with me. With the manual PHP 8.3 installation in place, the Composer dependency issue should ideally be resolved. I apologize again for the inconvenience with the editing tool.
