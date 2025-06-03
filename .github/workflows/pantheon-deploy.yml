@@ -26,6 +26,7 @@ jobs:
         run: |
           rm -rf vendor
           rm -f composer.lock
+          rm -rf /home/runner/.cache/composer
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -89,6 +90,7 @@ jobs:
         run: |
           rm -rf vendor
           rm -f composer.lock
+          rm -rf /home/runner/.cache/composer
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
