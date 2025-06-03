@@ -48,6 +48,11 @@ jobs:
           php -v
           which php
 
+      - name: Debug PHP and Composer versions
+        run: |
+          php -v
+          composer --version
+
       - name: Install Dependencies (test job)
         run: composer install --prefer-dist --no-progress
 
@@ -98,6 +103,11 @@ jobs:
 
       - name: Allow PHPStan extension installer plugin (Deploy Job)
         run: composer config --no-plugins allow-plugins.phpstan/extension-installer true
+
+      - name: Debug PHP and Composer versions (Deploy Job)
+        run: |
+          php -v
+          composer --version
 
       - name: Install Dependencies (Deploy Job)
         run: composer install --prefer-dist --no-dev --optimize-autoloader
