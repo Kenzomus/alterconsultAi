@@ -43,23 +43,7 @@ jobs:
           composer clear-cache
           composer validate
 
-      - name: Allow Pheanstalk bundle plugin (test job)
-        run: composer config --no-plugins allow-plugins.pheanstalk/pheanstalk-bundle true
-
-      - name: Allow PHPStan extension installer plugin (test job)
-        run: composer config --no-plugins allow-plugins.phpstan/extension-installer true
-
-      - name: Debug PHP version and path
-        run: |
-          php -v
-          which php
-
-      - name: Debug PHP and Composer versions
-        run: |
-          php -v
-          composer --version
-
-      - name: Install Dependencies (test job)
+      - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --no-ansi
 
       - name: Run PHPUnit tests
@@ -86,15 +70,6 @@ jobs:
         with:
           submodules: false
 
-      - name: Remove .gitmodules file
-        run: rm -f .gitmodules
-
-      - name: Clean up Composer environment
-        run: |
-          rm -rf vendor
-          rm -f composer.lock
-          rm -rf /home/runner/.cache/composer
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -104,19 +79,7 @@ jobs:
           coverage: xdebug
           tools: composer:v2
 
-      - name: Prepare Composer (Deploy Job)
-        run: |
-          composer self-update --stable
-          composer clear-cache
-          composer validate
-
-      - name: Allow Pheanstalk bundle plugin (Deploy Job)
-        run: composer config --no-plugins allow-plugins.pheanstalk/pheanstalk-bundle true
-
-      - name: Allow PHPStan extension installer plugin (Deploy Job)
-        run: composer config --no-plugins allow-plugins.phpstan/extension-installer true
-
-      - name: Install Dependencies (Deploy Job)
+      - name: Install Dependencies
         run: composer install --prefer-dist --no-dev --optimize-autoloader --no-ansi
 
       - name: Set up Terminus
@@ -133,26 +96,12 @@ jobs:
           git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
           git push pantheon main:master --force
 
-      - name: Clear Pantheon cache
-        run: terminus env:clear-cache ${{ secrets.PANTHEON_SITE }}.dev
-
-      - name: Run database updates
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- updb -y
-
-      - name: Import configuration
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cim -y
-
-      - name: Clear cache after updates
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cr
-
-      - name: Run cron
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cron
-
-      - name: Check site status
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- status
-
-      - name: Run security updates check
-        run: terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- pm:security-check
+      - name: Run database updates and import configuration
+        run: |
+          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- updb -y
+          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cim -y
+          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cr
+          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cron
 
       - name: Notify on Slack
         uses: 8398a7/action-slack@v3
