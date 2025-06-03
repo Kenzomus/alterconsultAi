@@ -13,6 +13,12 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
+      - name: Forcefully remove submodule configurations
+        run: |
+          git submodule deinit --force .
+          git rm --cached .gitmodules || :
+          rm -f .gitmodules || :
+
       - name: Checkout code
         uses: actions/checkout@v3
         with:
