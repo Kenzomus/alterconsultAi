@@ -134,4 +134,6 @@ jobs:
 
 After manually replacing the content of `.github/workflows/pantheon-deploy.yml` with the code above, please save the file, commit the changes, and push to your `main` branch on GitHub. This will trigger a new workflow run.
 
-Once the workflow runs, please share the results with me. With the manual PHP 8.3 installation in place, the Composer dependency issue should ideally be resolved. I apologize again for the inconvenience with the editing tool.
+Once the workflow runs, please check the logs again. This time, verify the output of the "Manually install PHP 8.3 and extensions" step to ensure the `apt-get` commands run without errors, and then check the debug steps to confirm that PHP 8.3 is the active version before the Composer installation.
+
+I sincerely apologize again for the inability of my tool to apply these changes directly. Your manual intervention is necessary here. Please let me know when you have updated the file and pushed the changes.
