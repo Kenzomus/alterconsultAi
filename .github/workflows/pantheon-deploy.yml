@@ -51,6 +51,9 @@ jobs:
       - name: Allow phpstan/extension-installer
         run: composer config allow-plugins.phpstan/extension-installer true
 
+      - name: Allow dealerdirect/phpcodesniffer-composer-installer
+        run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs
 
@@ -104,6 +107,9 @@ jobs:
 
       - name: Allow phpstan/extension-installer
         run: composer config allow-plugins.phpstan/extension-installer true
+
+      - name: Allow dealerdirect/phpcodesniffer-composer-installer (Deploy Job)
+        run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
       - name: Install Dependencies
         run: composer install --prefer-dist --no-dev --optimize-autoloader --no-ansi --ignore-platform-reqs
