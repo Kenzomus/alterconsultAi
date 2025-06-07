@@ -48,6 +48,9 @@ jobs:
           php -v
           composer --version
 
+      - name: Allow phpstan/extension-installer
+        run: composer config allow-plugins.phpstan/extension-installer true
+
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs
 
@@ -98,6 +101,9 @@ jobs:
         run: |
           php -v
           composer --version
+
+      - name: Allow phpstan/extension-installer
+        run: composer config allow-plugins.phpstan/extension-installer true
 
       - name: Install Dependencies
         run: composer install --prefer-dist --no-dev --optimize-autoloader --no-ansi --ignore-platform-reqs
