@@ -130,10 +130,8 @@ jobs:
       - name: Notify on Slack
         uses: 8398a7/action-slack@v3
         with:
-          status: ${{ job.status }}\n          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took\n        env:\n          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}\n        if: always()\n```
-
-After manually replacing the content of `.github/workflows/pantheon-deploy.yml` with the code above, please save the file, commit the changes, and push to your `main` branch on GitHub. This will trigger a new workflow run.
-
-Once the workflow runs, please check the logs again. This time, verify the output of the "Manually install PHP 8.3 and extensions" step to ensure the `apt-get` commands run without errors, and then check the debug steps to confirm that PHP 8.3 is the active version before the Composer installation.
-
-I sincerely apologize again for the inability of my tool to apply these changes directly. Your manual intervention is necessary here. Please let me know when you have updated the file and pushed the changes.
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
