@@ -145,15 +145,31 @@ jobs:
       - name: Add Pantheon SSH host keys
         run: |
           set -x
+          PANTHEON_CODESERVER_HOST="codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in"
+          PANTHEON_APPSERVER_HOST="appserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in"
+
           echo "Attempting to add Pantheon SSH host keys..."
           whoami
           pwd
           echo "PANTHEON_SITE: ${{ secrets.PANTHEON_SITE }}"
-          ping -c 3 codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in || echo "Ping failed. Check hostname and network."
-          nslookup codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in
-          nc -vz codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in 2222
+
+          echo "Attempting to resolve codeserver hostname: $PANTHEON_CODESERVER_HOST"
+          ping -c 3 $PANTHEON_CODESERVER_HOST || echo "Ping to $PANTHEON_CODESERVER_HOST failed. Check hostname and network."
+          nslookup $PANTHEON_CODESERVER_HOST
+          dig $PANTHEON_CODESERVER_HOST @8.8.8.8
+          getent hosts $PANTHEON_CODESERVER_HOST
+          nc -vz $PANTHEON_CODESERVER_HOST 2222
+
+          echo "Attempting to resolve appserver hostname: $PANTHEON_APPSERVER_HOST"
+          ping -c 3 $PANTHEON_APPSERVER_HOST || echo "Ping to $PANTHEON_APPSERVER_HOST failed. Check hostname and network."
+          nslookup $PANTHEON_APPSERVER_HOST
+          dig $PANTHEON_APPSERVER_HOST @8.8.8.8
+          getent hosts $PANTHEON_APPSERVER_HOST
+          nc -vz $PANTHEON_APPSERVER_HOST 2222
+
           mkdir -p ~/.ssh
-          ssh-keyscan -H -p 2222 codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in >> ~/.ssh/known_hosts
+          ssh-keyscan -H -p 2222 $PANTHEON_CODESERVER_HOST >> ~/.ssh/known_hosts
+          ssh-keyscan -H -p 2222 $PANTHEON_APPSERVER_HOST >> ~/.ssh/known_hosts
           echo "Contents of known_hosts:"
           cat ~/.ssh/known_hosts
           echo "Finished adding Pantheon SSH host keys."
