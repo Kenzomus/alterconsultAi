@@ -12,7 +12,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -28,11 +28,9 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3.x'
+          php-version: '8.3'
           extensions: curl, gd, intl, mbstring, mysql, opcache, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, xmlrpc, soap, sqlite3, pgsql, redis, imagick, gmp, ldap, apcu
           coverage: none
-        env:
-          update: true
 
       - name: Prepare Composer
         run: |
@@ -74,7 +72,7 @@ jobs:
   deploy:
     needs: test
     if: github.event.pull_request.merged == true || github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: dev
     steps:
@@ -92,11 +90,9 @@ jobs:
       - name: Setup PHP (Deploy Job)
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3.x'
+          php-version: '8.3'
           extensions: curl, gd, intl, mbstring, mysql, opcache, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, xmlrpc, soap, sqlite3, pgsql, redis, imagick, gmp, ldap, apcu
           coverage: none
-        env:
-          update: true
 
       - name: Prepare Composer (Deploy Job)
         run: |
@@ -141,12 +137,3 @@ jobs:
           terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cim -y
           terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cr
           terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cron
-
-      - name: Notify on Slack
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: always()
