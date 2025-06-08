@@ -87,12 +87,20 @@ jobs:
           rm -f composer.lock
           rm -rf /home/runner/.cache/composer
 
+      - name: Update apt cache and clean
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt clean
+
       - name: Setup PHP (Deploy Job)
-        uses: shivammathur/setup-php@verbose
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
           extensions: curl, gd, intl, mbstring, mysql, opcache, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, xmlrpc, soap, sqlite3, pgsql, redis, imagick, gmp, ldap, apcu
           coverage: none
+        env:
+          update: true
 
       - name: Prepare Composer (Deploy Job)
         run: |
@@ -104,6 +112,9 @@ jobs:
         run: |
           php -v
           composer --version
+
+      - name: Debug PHP version before Composer install (Deploy Job)
+        run: php -v
 
       - name: Allow phpstan/extension-installer
         run: composer config allow-plugins.phpstan/extension-installer true
