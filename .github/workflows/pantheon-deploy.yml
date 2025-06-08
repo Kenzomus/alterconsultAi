@@ -139,6 +139,15 @@ jobs:
         env:
           TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
+      - name: Add Pantheon SSH host keys
+        run: |
+          echo "Attempting to add Pantheon SSH host keys..."
+          mkdir -p ~/.ssh
+          ssh-keyscan -H codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in >> ~/.ssh/known_hosts
+          echo "Contents of known_hosts:"
+          cat ~/.ssh/known_hosts
+          echo "Finished adding Pantheon SSH host keys."
+
       - name: Push code to Pantheon Dev
         run: |
           git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
