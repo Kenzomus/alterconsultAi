@@ -19,6 +19,9 @@ jobs:
         with:
           submodules: false
 
+      - name: Debug PHP version at start
+        run: php -v
+
       - name: Clean up Composer environment
         run: |
           rm -rf vendor
