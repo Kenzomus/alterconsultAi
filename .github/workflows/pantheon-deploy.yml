@@ -88,7 +88,7 @@ jobs:
           rm -rf /home/runner/.cache/composer
 
       - name: Setup PHP (Deploy Job)
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@verbose
         with:
           php-version: '8.3'
           extensions: curl, gd, intl, mbstring, mysql, opcache, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, xmlrpc, soap, sqlite3, pgsql, redis, imagick, gmp, ldap, apcu
