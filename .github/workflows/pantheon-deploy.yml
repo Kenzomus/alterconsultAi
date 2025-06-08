@@ -136,6 +136,8 @@ jobs:
 
       - name: Authenticate with Pantheon
         run: terminus auth:login --machine-token=${{ secrets.PANTHEON_MACHINE_TOKEN }}
+        env:
+          TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
       - name: Push code to Pantheon Dev
         run: |
