@@ -19,9 +19,6 @@ jobs:
         with:
           submodules: false
 
-      - name: Debug PHP version at start
-        run: php -v
-
       - name: Clean up Composer environment
         run: |
           rm -rf vendor
@@ -42,21 +39,6 @@ jobs:
           composer self-update --stable
           composer clear-cache
           composer validate
-
-      - name: Debug PHP version and path (after manual install)
-        run: |
-          php -v
-          which php
-          ls -l $(which php)
-          ls -al /usr/bin/php*
-          ls -al /etc/alternatives/php
-          sudo update-alternatives --config php
-          echo $PATH
-
-      - name: Debug PHP and Composer versions
-        run: |
-          php -v
-          composer --version
 
       - name: Allow phpstan/extension-installer
         run: composer config allow-plugins.phpstan/extension-installer true
@@ -103,28 +85,20 @@ jobs:
           sudo apt upgrade -y
           sudo apt clean
 
-      - name: Setup PHP (Deploy Job)
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: curl, gd, intl, mbstring, mysql, opcache, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, xmlrpc, soap, sqlite3, pgsql, redis, imagick, gmp, ldap, apcu
-          coverage: none
-        env:
-          update: true
+      - name: Install PHP 8.3 and extensions manually (Deploy Job)
+        run: |
+          sudo apt update
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository -y ppa:ondrej/php
+          sudo apt update
+          sudo apt install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo php8.3-xmlrpc php8.3-sqlite3 php8.3-pgsql php8.3-redis php8.3-imagick php8.3-gmp php8.3-ldap php8.3-apcu
+          sudo update-alternatives --set php /usr/bin/php8.3
 
       - name: Prepare Composer (Deploy Job)
         run: |
           composer self-update --stable
           composer clear-cache
           composer validate
-
-      - name: Debug PHP and Composer versions (Deploy Job)
-        run: |
-          php -v
-          composer --version
-
-      - name: Debug PHP version before Composer install (Deploy Job)
-        run: php -v
 
       - name: Allow phpstan/extension-installer
         run: composer config allow-plugins.phpstan/extension-installer true
