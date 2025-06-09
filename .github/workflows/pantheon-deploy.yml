@@ -120,8 +120,6 @@ jobs:
 
       - name: Authenticate with Pantheon
         run: terminus auth:login --machine-token=${{ secrets.PANTHEON_MACHINE_TOKEN }}
-        env:
-          TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
       - name: Configure Git
         run: |
@@ -133,7 +131,7 @@ jobs:
         run: |
           set -x
           echo "Setting connection mode to Git..."
-          terminus connection:set ${{ secrets.PANTHEON_SITE }}.dev git
+          /usr/bin/php8.3 $(which terminus) connection:set ${{ secrets.PANTHEON_SITE }}.dev git
 
           echo "Creating a temporary directory for the deployment..."
           TEMP_DIR=$(mktemp -d)
@@ -163,6 +161,8 @@ jobs:
               sleep 5
             fi
           done
+        env:
+          TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
       - name: Run database updates and configuration import
         run: |
