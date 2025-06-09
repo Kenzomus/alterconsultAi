@@ -10,6 +10,10 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  PHP_VERSION: '8.3'
+  COMPOSER_NO_INTERACTION: 1
+
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -19,47 +23,43 @@ jobs:
         with:
           submodules: false
 
-      - name: Clean up Composer environment
-        run: |
-          rm -rf vendor
-          rm -f composer.lock
-          rm -rf /home/runner/.cache/composer
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: curl, gd, intl, mbstring, mysql, opcache, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, xmlrpc, sqlite3, pgsql, redis, imagick, gmp, ldap, apcu
+          coverage: none
+          tools: composer:v2
 
-      - name: Install PHP 8.3 and extensions manually
-        run: |
-          sudo apt update
-          sudo apt install -y software-properties-common
-          sudo add-apt-repository -y ppa:ondrej/php
-          sudo apt update
-          sudo apt install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo php8.3-xmlrpc php8.3-sqlite3 php8.3-pgsql php8.3-redis php8.3-imagick php8.3-gmp php8.3-ldap php8.3-apcu
-          sudo update-alternatives --set php /usr/bin/php8.3
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Prepare Composer
-        run: |
-          composer self-update --stable
-          composer clear-cache
-          composer validate
-
-      - name: Allow phpstan/extension-installer
-        run: composer config allow-plugins.phpstan/extension-installer true
-
-      - name: Allow dealerdirect/phpcodesniffer-composer-installer
-        run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Dependencies
-        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-plugins
+        run: composer install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs
 
       - name: Run PHPUnit tests
-        run: vendor/bin/phpunit || true
+        run: vendor/bin/phpunit
+        continue-on-error: true
 
       - name: Run PHPCS
-        run: vendor/bin/phpcs || true
+        run: vendor/bin/phpcs
+        continue-on-error: true
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse || true
+        run: vendor/bin/phpstan analyse
+        continue-on-error: true
 
       - name: Run Security Check
-        run: vendor/bin/local-php-security-checker check || true
+        run: vendor/bin/local-php-security-checker check
+        continue-on-error: true
 
   deploy:
     needs: test
@@ -67,56 +67,40 @@ jobs:
     runs-on: ubuntu-24.04
     environment:
       name: dev
+      url: https://dev-${{ secrets.PANTHEON_SITE }}.pantheonsite.io
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           submodules: false
 
-      - name: Clean up Composer environment
-        run: |
-          rm -rf vendor
-          rm -f composer.lock
-          rm -rf /home/runner/.cache/composer
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: curl, gd, intl, mbstring, mysql, opcache, xml, zip, soap, bcmath, exif, ftp, gettext, pdo, xmlrpc, sqlite3, pgsql, redis, imagick, gmp, ldap, apcu
+          coverage: none
+          tools: composer:v2
 
-      - name: Update apt cache and clean
-        run: |
-          sudo apt update
-          sudo apt upgrade -y
-          sudo apt clean
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Install PHP 8.3 and extensions manually (Deploy Job)
-        run: |
-          sudo apt update
-          sudo apt install -y software-properties-common
-          sudo add-apt-repository -y ppa:ondrej/php
-          sudo apt update
-          sudo apt install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo php8.3-xmlrpc php8.3-sqlite3 php8.3-pgsql php8.3-redis php8.3-imagick php8.3-gmp php8.3-ldap php8.3-apcu
-          sudo update-alternatives --set php /usr/bin/php8.3
-
-      - name: Prepare Composer (Deploy Job)
-        run: |
-          composer self-update --stable
-          composer clear-cache
-          composer validate
-
-      - name: Allow phpstan/extension-installer
-        run: composer config allow-plugins.phpstan/extension-installer true
-
-      - name: Allow dealerdirect/phpcodesniffer-composer-installer (Deploy Job)
-        run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Dependencies
-        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-dev --optimize-autoloader --no-ansi --ignore-platform-reqs --no-plugins
+        run: composer install --prefer-dist --no-dev --optimize-autoloader --no-ansi --ignore-platform-reqs
 
       - name: Set up Terminus
         run: |
           curl -L -f -O https://github.com/pantheon-systems/terminus/releases/download/3.1.0/terminus.phar
           chmod +x terminus.phar
           sudo mv terminus.phar /usr/local/bin/terminus
-          ls -lh /usr/local/bin/terminus
-          file /usr/local/bin/terminus
-          head /usr/local/bin/terminus
 
       - name: Authenticate with Pantheon
         run: terminus auth:login --machine-token=${{ secrets.PANTHEON_MACHINE_TOKEN }}
@@ -129,31 +113,10 @@ jobs:
           PANTHEON_CODESERVER_HOST="codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in"
           PANTHEON_APPSERVER_HOST="appserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in"
 
-          echo "Attempting to add Pantheon SSH host keys..."
-          whoami
-          pwd
-          echo "PANTHEON_SITE: ${{ secrets.PANTHEON_SITE }}"
-
-          echo "Attempting to resolve codeserver hostname: $PANTHEON_CODESERVER_HOST"
-          ping -c 3 $PANTHEON_CODESERVER_HOST || echo "Ping to $PANTHEON_CODESERVER_HOST failed. Check hostname and network."
-          nslookup $PANTHEON_CODESERVER_HOST
-          dig $PANTHEON_CODESERVER_HOST @8.8.8.8
-          getent hosts $PANTHEON_CODESERVER_HOST
-          nc -vz $PANTHEON_CODESERVER_HOST 2222
-
-          echo "Attempting to resolve appserver hostname: $PANTHEON_APPSERVER_HOST"
-          ping -c 3 $PANTHEON_APPSERVER_HOST || echo "Ping to $PANTHEON_APPSERVER_HOST failed. Check hostname and network."
-          nslookup $PANTHEON_APPSERVER_HOST
-          dig $PANTHEON_APPSERVER_HOST @8.8.8.8
-          getent hosts $PANTHEON_APPSERVER_HOST
-          nc -vz $PANTHEON_APPSERVER_HOST 2222
-
           mkdir -p ~/.ssh
           ssh-keyscan -H -p 2222 $PANTHEON_CODESERVER_HOST >> ~/.ssh/known_hosts
           ssh-keyscan -H -p 2222 $PANTHEON_APPSERVER_HOST >> ~/.ssh/known_hosts
-          echo "Contents of known_hosts:"
-          cat ~/.ssh/known_hosts
-          echo "Finished adding Pantheon SSH host keys."
+          chmod 600 ~/.ssh/known_hosts
 
       - name: Push code to Pantheon Dev
         run: |
