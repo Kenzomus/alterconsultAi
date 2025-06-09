@@ -140,6 +140,7 @@ jobs:
 
           echo "Initializing git repository..."
           git init
+
           git add .
           git commit -m "Deploy from GitHub Actions"
 
@@ -149,7 +150,7 @@ jobs:
           echo "Pushing to Pantheon..."
           for i in {1..3}; do
             echo "Push attempt $i..."
-            if git push pantheon master --force; then
+            if git push pantheon main:master --force; then
               echo "Push successful!"
               break
             else
