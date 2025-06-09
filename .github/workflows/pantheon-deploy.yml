@@ -123,57 +123,35 @@ jobs:
         env:
           TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
-      - name: Add Pantheon SSH host keys
-        run: |
-          set -x
-          PANTHEON_CODESERVER_HOST="codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in"
-          PANTHEON_APPSERVER_HOST="appserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in"
-
-          echo "Attempting to add Pantheon SSH host keys..."
-          whoami
-          pwd
-          echo "PANTHEON_SITE: ${{ secrets.PANTHEON_SITE }}"
-
-          # Create SSH directory and set permissions
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          touch ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
-          # Add host keys with retries
-          for i in {1..3}; do
-            echo "Attempt $i to add SSH host keys..."
-            ssh-keyscan -H -p 2222 $PANTHEON_CODESERVER_HOST >> ~/.ssh/known_hosts 2>/dev/null || true
-            ssh-keyscan -H -p 2222 $PANTHEON_APPSERVER_HOST >> ~/.ssh/known_hosts 2>/dev/null || true
-            sleep 2
-          done
-
-          echo "Contents of known_hosts:"
-          cat ~/.ssh/known_hosts
-          echo "Finished adding Pantheon SSH host keys."
-
       - name: Configure Git
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
           git config --global --add safe.directory /__w/alterconsultAI/alterconsultAI
 
-      - name: Push code to Pantheon Dev
+      - name: Deploy code to Pantheon using Terminus
         run: |
           set -x
-          PANTHEON_REMOTE="ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git"
+          echo "Setting connection mode to Git..."
+          terminus connection:set ${{ secrets.PANTHEON_SITE }}.dev git
+
+          echo "Creating a temporary directory for the deployment..."
+          TEMP_DIR=$(mktemp -d)
+          cp -r ./* $TEMP_DIR/
+          cd $TEMP_DIR
+
+          echo "Initializing git repository..."
+          git init
+          git add .
+          git commit -m "Deploy from GitHub Actions"
 
           echo "Adding Pantheon remote..."
-          git remote remove pantheon || true
-          git remote add pantheon "$PANTHEON_REMOTE"
+          git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
 
-          echo "Verifying remote..."
-          git remote -v
-
-          echo "Attempting to push to Pantheon..."
+          echo "Pushing to Pantheon..."
           for i in {1..3}; do
             echo "Push attempt $i..."
-            if git push pantheon main:master --force; then
+            if git push pantheon master --force; then
               echo "Push successful!"
               break
             else
