@@ -40,6 +40,17 @@ jobs:
           composer clear-cache
           composer validate
 
+      - name: Debug PHP and Composer versions (Test Job)
+        run: |
+          echo "PHP version:"
+          php -v
+          echo "Which PHP:"
+          which php
+          echo "Composer version:"
+          composer --version
+          echo "Which Composer:"
+          which composer
+
       - name: Allow phpstan/extension-installer
         run: composer config allow-plugins.phpstan/extension-installer true
 
@@ -47,7 +58,10 @@ jobs:
         run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
       - name: Install Dependencies
-        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-plugins
+        run: composer install --prefer-dist --no-progress --no-ansi --no-plugins
+
+      - name: Check for local-php-security-checker
+        run: ls -l vendor/bin/local-php-security-checker || true
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit || true
@@ -100,6 +114,17 @@ jobs:
           composer clear-cache
           composer validate
 
+      - name: Debug PHP and Composer versions (Deploy Job)
+        run: |
+          echo "PHP version:"
+          php -v
+          echo "Which PHP:"
+          which php
+          echo "Composer version:"
+          composer --version
+          echo "Which Composer:"
+          which composer
+
       - name: Allow phpstan/extension-installer
         run: composer config allow-plugins.phpstan/extension-installer true
 
@@ -107,7 +132,7 @@ jobs:
         run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
       - name: Install Dependencies
-        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-dev --optimize-autoloader --no-ansi --ignore-platform-reqs --no-plugins
+        run: composer install --prefer-dist --no-dev --optimize-autoloader --no-ansi --no-plugins
 
       - name: Set up Terminus
         run: |
