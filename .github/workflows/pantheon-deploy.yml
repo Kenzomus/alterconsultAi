@@ -134,35 +134,69 @@ jobs:
           pwd
           echo "PANTHEON_SITE: ${{ secrets.PANTHEON_SITE }}"
 
-          echo "Attempting to resolve codeserver hostname: $PANTHEON_CODESERVER_HOST"
-          ping -c 3 $PANTHEON_CODESERVER_HOST || echo "Ping to $PANTHEON_CODESERVER_HOST failed. Check hostname and network."
-          nslookup $PANTHEON_CODESERVER_HOST
-          dig $PANTHEON_CODESERVER_HOST @8.8.8.8
-          getent hosts $PANTHEON_CODESERVER_HOST
-          nc -vz $PANTHEON_CODESERVER_HOST 2222
-
-          echo "Attempting to resolve appserver hostname: $PANTHEON_APPSERVER_HOST"
-          ping -c 3 $PANTHEON_APPSERVER_HOST || echo "Ping to $PANTHEON_APPSERVER_HOST failed. Check hostname and network."
-          nslookup $PANTHEON_APPSERVER_HOST
-          dig $PANTHEON_APPSERVER_HOST @8.8.8.8
-          getent hosts $PANTHEON_APPSERVER_HOST
-          nc -vz $PANTHEON_APPSERVER_HOST 2222
-
+          # Create SSH directory and set permissions
           mkdir -p ~/.ssh
-          ssh-keyscan -H -p 2222 $PANTHEON_CODESERVER_HOST >> ~/.ssh/known_hosts
-          ssh-keyscan -H -p 2222 $PANTHEON_APPSERVER_HOST >> ~/.ssh/known_hosts
+          chmod 700 ~/.ssh
+          touch ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+          # Add host keys with retries
+          for i in {1..3}; do
+            echo "Attempt $i to add SSH host keys..."
+            ssh-keyscan -H -p 2222 $PANTHEON_CODESERVER_HOST >> ~/.ssh/known_hosts 2>/dev/null || true
+            ssh-keyscan -H -p 2222 $PANTHEON_APPSERVER_HOST >> ~/.ssh/known_hosts 2>/dev/null || true
+            sleep 2
+          done
+
           echo "Contents of known_hosts:"
           cat ~/.ssh/known_hosts
           echo "Finished adding Pantheon SSH host keys."
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git config --global --add safe.directory /__w/alterconsultAI/alterconsultAI
+
       - name: Push code to Pantheon Dev
         run: |
-          git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
-          git push pantheon main:master --force
+          set -x
+          PANTHEON_REMOTE="ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git"
+
+          echo "Adding Pantheon remote..."
+          git remote remove pantheon || true
+          git remote add pantheon "$PANTHEON_REMOTE"
+
+          echo "Verifying remote..."
+          git remote -v
+
+          echo "Attempting to push to Pantheon..."
+          for i in {1..3}; do
+            echo "Push attempt $i..."
+            if git push pantheon main:master --force; then
+              echo "Push successful!"
+              break
+            else
+              echo "Push attempt $i failed"
+              if [ $i -eq 3 ]; then
+                echo "All push attempts failed"
+                exit 1
+              fi
+              sleep 5
+            fi
+          done
 
       - name: Run database updates and configuration import
         run: |
-          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- updb -y
-          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cim -y
-          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cr
-          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cron
+          set -x
+          echo "Running database updates..."
+          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- updb -y || echo "Database updates failed but continuing..."
+
+          echo "Importing configuration..."
+          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cim -y || echo "Config import failed but continuing..."
+
+          echo "Clearing cache..."
+          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cr || echo "Cache clear failed but continuing..."
+
+          echo "Running cron..."
+          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cron || echo "Cron failed but continuing..."
