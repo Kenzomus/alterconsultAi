@@ -120,12 +120,22 @@ jobs:
 
       - name: Authenticate with Pantheon
         run: terminus auth:login --machine-token=${{ secrets.PANTHEON_MACHINE_TOKEN }}
+        env:
+          TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
       - name: Configure Git
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
           git config --global --add safe.directory /__w/alterconsultAI/alterconsultAI
+
+      - name: Debug PHP and Composer versions in Deploy Job
+        run: |
+          echo "PHP version: $(php -v)"
+          echo "Path to PHP: $(which php)"
+          echo "Composer version: $(composer --version)"
+          echo "Path to Composer: $(which composer)"
+          ls -l /usr/bin/php*
 
       - name: Deploy code to Pantheon using Terminus
         run: |
