@@ -19,6 +19,12 @@ jobs:
         with:
           submodules: false
 
+      - name: Clean up Composer environment
+        run: |
+          rm -rf vendor
+          rm -f composer.lock
+          rm -rf /home/runner/.cache/composer
+
       - name: Install PHP 8.3 and extensions manually
         run: |
           sudo apt update
@@ -28,35 +34,11 @@ jobs:
           sudo apt install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo php8.3-xmlrpc php8.3-sqlite3 php8.3-pgsql php8.3-redis php8.3-imagick php8.3-gmp php8.3-ldap php8.3-apcu
           sudo update-alternatives --set php /usr/bin/php8.3
 
-      - name: Verify PHP version after manual install (Test Job)
-        run: |
-          echo "PHP version after manual install:"
-          php -v
-          echo "Which PHP after manual install:"
-          which php
-
-      - name: Clean up Composer environment
-        run: |
-          rm -rf vendor
-          rm -f composer.lock
-          rm -rf /home/runner/.cache/composer
-
       - name: Prepare Composer
         run: |
           composer self-update --stable
           composer clear-cache
           composer validate
-
-      - name: Debug PHP and Composer versions (Test Job)
-        run: |
-          echo "PHP version:"
-          php -v
-          echo "Which PHP:"
-          which php
-          echo "Composer version:"
-          composer --version
-          echo "Which Composer:"
-          which composer
 
       - name: Allow phpstan/extension-installer
         run: composer config allow-plugins.phpstan/extension-installer true
@@ -65,10 +47,7 @@ jobs:
         run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
       - name: Install Dependencies
-        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-progress --no-ansi
-
-      - name: Check for local-php-security-checker
-        run: ls -l vendor/bin/local-php-security-checker || true
+        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-plugins
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit || true
@@ -94,6 +73,18 @@ jobs:
         with:
           submodules: false
 
+      - name: Clean up Composer environment
+        run: |
+          rm -rf vendor
+          rm -f composer.lock
+          rm -rf /home/runner/.cache/composer
+
+      - name: Update apt cache and clean
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt clean
+
       - name: Install PHP 8.3 and extensions manually (Deploy Job)
         run: |
           sudo apt update
@@ -103,35 +94,11 @@ jobs:
           sudo apt install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo php8.3-xmlrpc php8.3-sqlite3 php8.3-pgsql php8.3-redis php8.3-imagick php8.3-gmp php8.3-ldap php8.3-apcu
           sudo update-alternatives --set php /usr/bin/php8.3
 
-      - name: Verify PHP version after manual install (Deploy Job)
-        run: |
-          echo "PHP version after manual install:"
-          php -v
-          echo "Which PHP after manual install:"
-          which php
-
-      - name: Clean up Composer environment
-        run: |
-          rm -rf vendor
-          rm -f composer.lock
-          rm -rf /home/runner/.cache/composer
-
       - name: Prepare Composer (Deploy Job)
         run: |
           composer self-update --stable
           composer clear-cache
           composer validate
-
-      - name: Debug PHP and Composer versions (Deploy Job)
-        run: |
-          echo "PHP version:"
-          php -v
-          echo "Which PHP:"
-          which php
-          echo "Composer version:"
-          composer --version
-          echo "Which Composer:"
-          which composer
 
       - name: Allow phpstan/extension-installer
         run: composer config allow-plugins.phpstan/extension-installer true
@@ -140,7 +107,7 @@ jobs:
         run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
       - name: Install Dependencies
-        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-dev --optimize-autoloader --no-ansi
+        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-dev --optimize-autoloader --no-ansi --ignore-platform-reqs --no-plugins
 
       - name: Set up Terminus
         run: |
@@ -155,11 +122,6 @@ jobs:
         run: terminus auth:login --machine-token=${{ secrets.PANTHEON_MACHINE_TOKEN }}
         env:
           TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
-
-      - name: Set up SSH agent
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
 
       - name: Add Pantheon SSH host keys
         run: |
