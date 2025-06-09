@@ -111,7 +111,7 @@ jobs:
 
       - name: Set up Terminus
         run: |
-          curl -L -f -O https://github.com/pantheon-systems/terminus/releases/download/3.1.0/terminus.phar
+          curl -L -f -O https://github.com/pantheon-systems/terminus/releases/download/4.0.1/terminus.phar
           chmod +x terminus.phar
           sudo mv terminus.phar /usr/local/bin/terminus
           ls -lh /usr/local/bin/terminus
