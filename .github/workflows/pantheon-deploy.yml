@@ -123,12 +123,6 @@ jobs:
         env:
           TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
-      - name: Configure Git
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git config --global --add safe.directory /__w/alterconsultAI/alterconsultAI
-
       - name: Debug PHP and Composer versions in Deploy Job
         run: |
           echo "PHP version: $(php -v)"
@@ -145,16 +139,39 @@ jobs:
 
           echo "Creating a temporary directory for the deployment..."
           TEMP_DIR=$(mktemp -d)
-          cp -r ./* $TEMP_DIR/
+          rsync -av --exclude='.git/' --exclude='.github/' ./ $TEMP_DIR/
           cd $TEMP_DIR
 
+          echo "Contents of TEMP_DIR after rsync and cd:"
+          ls -al
+
           echo "Initializing git repository..."
-          git init
+          git init --initial-branch=main
+          echo "git init exit code: $?"
 
           git add .
+          echo "git add exit code: $?"
+
           git commit -m "Deploy from GitHub Actions"
+          COMMIT_EXIT_CODE=$?
+          echo "git commit exit code: $COMMIT_EXIT_CODE"
+
+          if [ "$COMMIT_EXIT_CODE" -ne 0 ]; then
+            echo "Error: git commit failed with exit code $COMMIT_EXIT_CODE. This might be why 'main' branch is not found." >&2
+            exit 1
+          fi
+
+          echo "Local repository status before push:"
+          git status
+          echo "Local repository log before push:"
+          git log --oneline
+          echo "Local branches before push:"
+          git branch -a
+          echo "Current HEAD ref:"
+          git rev-parse HEAD || true
 
           echo "Adding Pantheon remote..."
+          git remote remove pantheon || true
           git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
 
           echo "Pushing to Pantheon..."
