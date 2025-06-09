@@ -138,6 +138,11 @@ jobs:
         env:
           TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
+
       - name: Add Pantheon SSH host keys
         run: |
           set -x
