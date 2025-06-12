@@ -36,9 +36,9 @@ jobs:
 
       - name: Prepare Composer
         run: |
-          composer self-update --stable
-          composer clear-cache
-          composer validate
+          /usr/bin/php8.3 $(which composer) self-update --stable
+          /usr/bin/php8.3 $(which composer) clear-cache
+          /usr/bin/php8.3 $(which composer) validate
 
       - name: Allow phpstan/extension-installer
         run: composer config allow-plugins.phpstan/extension-installer true
@@ -123,17 +123,11 @@ jobs:
         env:
           TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
-      - name: Debug PHP and Composer versions in Deploy Job
-        run: |
-          echo "PHP version: $(php -v)"
-          echo "Path to PHP: $(which php)"
-          echo "Composer version: $(composer --version)"
-          echo "Path to Composer: $(which composer)"
-          ls -l /usr/bin/php*
-
       - name: Deploy code to Pantheon using Terminus
         run: |
           set -x
+          git config --global --add safe.directory /__w/alterconsultAI/alterconsultAI
+
           echo "Setting connection mode to Git..."
           /usr/bin/php8.3 $(which terminus) connection:set ${{ secrets.PANTHEON_SITE }}.dev git
 
@@ -146,8 +140,10 @@ jobs:
           ls -al
 
           echo "Initializing git repository..."
-          git init --initial-branch=main
+          git init
           echo "git init exit code: $?"
+          git checkout -b main
+          echo "git checkout -b main exit code: $?"
 
           git add .
           echo "git add exit code: $?"
@@ -169,15 +165,16 @@ jobs:
           git branch -a
           echo "Current HEAD ref:"
           git rev-parse HEAD || true
+          echo "Git Reflog:"
+          git reflog
 
           echo "Adding Pantheon remote..."
-          git remote remove pantheon || true
           git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
 
           echo "Pushing to Pantheon..."
           for i in {1..3}; do
             echo "Push attempt $i..."
-            if git push pantheon main:master --force; then
+            if git push pantheon HEAD:master --force; then
               echo "Push successful!"
               break
             else
@@ -196,13 +193,13 @@ jobs:
         run: |
           set -x
           echo "Running database updates..."
-          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- updb -y || echo "Database updates failed but continuing..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- updb -y || echo "Database updates failed but continuing..."
 
           echo "Importing configuration..."
-          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cim -y || echo "Config import failed but continuing..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- cim -y || echo "Config import failed but continuing..."
 
           echo "Clearing cache..."
-          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cr || echo "Cache clear failed but continuing..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- cr || echo "Cache clear failed but continuing..."
 
           echo "Running cron..."
-          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cron || echo "Cron failed but continuing..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- cron || echo "Cron failed but continuing..."
