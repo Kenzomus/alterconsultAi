@@ -47,3 +47,5 @@ yarn-error.log*
 /web/sites/default/translations/
 /web/sites/default/settings.local.php
 /web/sites/default/services.local.yml
+/.editorconfig
+/.gitattributes
