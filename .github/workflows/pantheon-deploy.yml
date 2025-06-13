@@ -168,13 +168,22 @@ jobs:
           echo "Git Reflog:"
           git reflog
 
+          HEAD_SHA=$(git rev-parse HEAD)
+          echo "Resolved HEAD SHA: $HEAD_SHA"
+
+          if [ -z "$HEAD_SHA" ]; then
+            echo "Error: Could not resolve HEAD to a SHA. Aborting push." >&2
+            exit 1
+          fi
+
           echo "Adding Pantheon remote..."
+          git remote remove pantheon || true
           git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
 
           echo "Pushing to Pantheon..."
           for i in {1..3}; do
             echo "Push attempt $i..."
-            if git push pantheon HEAD:master --force; then
+            if git push pantheon $HEAD_SHA:master --force; then
               echo "Push successful!"
               break
             else
