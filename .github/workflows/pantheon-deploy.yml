@@ -36,18 +36,25 @@ jobs:
 
       - name: Prepare Composer
         run: |
-          /usr/bin/php8.3 $(which composer) self-update --stable
-          /usr/bin/php8.3 $(which composer) clear-cache
-          /usr/bin/php8.3 $(which composer) validate
+          curl -sS https://getcomposer.org/installer | /usr/bin/php8.3 -- --install-dir=/usr/local/bin --filename=composer
+          /usr/bin/php8.3 /usr/local/bin/composer self-update --stable
+          /usr/bin/php8.3 /usr/local/bin/composer clear-cache
+          /usr/bin/php8.3 /usr/local/bin/composer validate
 
       - name: Allow phpstan/extension-installer
-        run: composer config allow-plugins.phpstan/extension-installer true
+        run: /usr/bin/php8.3 /usr/local/bin/composer config allow-plugins.phpstan/extension-installer true
 
       - name: Allow dealerdirect/phpcodesniffer-composer-installer
-        run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+        run: /usr/bin/php8.3 /usr/local/bin/composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
       - name: Install Dependencies
-        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-plugins
+        run: |
+          echo "Debugging PHP and Composer versions within Install Dependencies step:"
+          php -v
+          which php
+          composer --version
+          which composer
+          /usr/bin/php8.3 /usr/local/bin/composer install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-plugins
 
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit || true
@@ -96,18 +103,19 @@ jobs:
 
       - name: Prepare Composer (Deploy Job)
         run: |
-          composer self-update --stable
-          composer clear-cache
-          composer validate
+          curl -sS https://getcomposer.org/installer | /usr/bin/php8.3 -- --install-dir=/usr/local/bin --filename=composer
+          /usr/bin/php8.3 /usr/local/bin/composer self-update --stable
+          /usr/bin/php8.3 /usr/local/bin/composer clear-cache
+          /usr/bin/php8.3 /usr/local/bin/composer validate
 
       - name: Allow phpstan/extension-installer
-        run: composer config allow-plugins.phpstan/extension-installer true
+        run: /usr/bin/php8.3 /usr/local/bin/composer config allow-plugins.phpstan/extension-installer true
 
       - name: Allow dealerdirect/phpcodesniffer-composer-installer (Deploy Job)
-        run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+        run: /usr/bin/php8.3 /usr/local/bin/composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
       - name: Install Dependencies
-        run: /usr/bin/php8.3 $(which composer) install --prefer-dist --no-dev --optimize-autoloader --no-ansi --ignore-platform-reqs --no-plugins
+        run: /usr/bin/php8.3 /usr/local/bin/composer install --prefer-dist --no-dev --optimize-autoloader --no-ansi --ignore-platform-reqs --no-plugins
 
       - name: Set up Terminus
         run: |
