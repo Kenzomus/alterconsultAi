@@ -249,3 +249,33 @@ jobs:
 
           echo "Running cron..."
           /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- cron || echo "Cron failed but continuing..."
+
+          echo "Rebuilding cache..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- cr || echo "Cache rebuild failed but continuing..."
+
+          echo "Checking module status..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- pm-list || echo "Module list failed but continuing..."
+
+          echo "Checking theme status..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- theme-list || echo "Theme list failed but continuing..."
+
+          echo "Rebuilding registry..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- php-eval 'drupal_flush_all_caches();' || echo "Registry rebuild failed but continuing..."
+
+          echo "Verifying file structure and permissions..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- php-eval '
+            echo "Checking web/modules directory:\n";
+            system("ls -la /app/web/modules");
+            echo "\nChecking web/themes directory:\n";
+            system("ls -la /app/web/themes");
+            echo "\nChecking custom modules:\n";
+            system("ls -la /app/web/modules/custom");
+            echo "\nChecking custom themes:\n";
+            system("ls -la /app/web/themes/custom");
+          ' || echo "File structure check failed but continuing..."
+
+          echo "Verifying module installation status..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- pm-list --type=module --status=enabled --format=table || echo "Module status check failed but continuing..."
+
+          echo "Verifying theme installation status..."
+          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- pm-list --type=theme --status=enabled --format=table || echo "Theme status check failed but continuing..."

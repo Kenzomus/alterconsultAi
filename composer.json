@@ -7,6 +7,14 @@
         {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "path",
+            "url": "web/modules/custom/*"
+        },
+        {
+            "type": "path",
+            "url": "web/themes/custom/*"
         }
     ],
     "require": {
@@ -19,7 +27,11 @@
         "drupal/google_analytics": "^4.0 || ^5.0",
         "drupal/token": "^1.0 || ^2.0",
         "drupal/pathauto": "^1.0 || ^2.0",
-        "drupal/metatag": "^1.0 || ^2.0"
+        "drupal/metatag": "^1.0 || ^2.0",
+        "alterconsult/alter_consult_chatbot": "*",
+        "alterconsult/alterconsult_benefits": "*",
+        "alterconsult/alterconsult_services": "*",
+        "alterconsult/alterconsult": "*"
     },
     "require-dev": {
         "drupal/core-dev": "^11.0",
