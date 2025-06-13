@@ -279,6 +279,8 @@ jobs:
             system("ls -la /app/web/modules/custom");
             echo "\nChecking custom themes:\n";
             system("ls -la /app/web/themes/custom");
+            echo "\nChecking Drupal core system controller directory:\n";
+            system("ls -la /app/web/core/modules/system/src/Controller/");
           ' || echo "File structure check failed but continuing..."
 
           echo "Verifying module installation status..."
