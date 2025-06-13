@@ -148,6 +148,9 @@ jobs:
           git add .
           echo "git add exit code: $?"
 
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions"
+
           git commit -m "Deploy from GitHub Actions"
           COMMIT_EXIT_CODE=$?
           echo "git commit exit code: $COMMIT_EXIT_CODE"
