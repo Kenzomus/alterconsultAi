@@ -1,0 +1,4 @@
+access chatbot conversations:
+  title: 'Access chatbot conversations'
+  description: 'View and manage chatbot conversations'
+  restrict access: true

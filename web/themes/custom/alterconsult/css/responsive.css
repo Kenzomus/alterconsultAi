@@ -1,0 +1,57 @@
+/* Tablet Styles */
+@media screen and (max-width: 1024px) {
+  .service-card {
+    padding: 1.5rem;
+  }
+
+  .benefits-carousel {
+    padding: 2rem 0;
+  }
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+  .header {
+    padding: 1rem 0;
+  }
+
+  .nav-link {
+    padding: 0.5rem 0;
+  }
+
+  .service-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .benefit-item {
+    padding: 1rem;
+  }
+
+  .footer {
+    padding: 2rem 0;
+  }
+
+  .social-icons {
+    margin-top: 1rem;
+  }
+
+  .contact-form {
+    padding: 0 1rem;
+  }
+}
+
+/* Small Mobile Styles */
+@media screen and (max-width: 480px) {
+  .service-card {
+    padding: 1rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    text-align: center;
+  }
+
+  .benefit-icon {
+    font-size: 1.5rem;
+  }
+}

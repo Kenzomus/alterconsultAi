@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html{{ html_attributes }}>
+  <head>
+    <head-placeholder token="{{ placeholder_token }}">
+    <title>{{ head_title|safe_join(' | ') }}</title>
+    <css-placeholder token="{{ placeholder_token }}">
+    <js-placeholder token="{{ placeholder_token }}">
+  </head>
+  <body{{ attributes }}>
+    {% include 'navigation/main-navigation.html.twig' %}
+    <main role="main">
+      {{ page.content }}
+    </main>
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="/" class="nav-link">Home</a>
+          <a href="/about" class="nav-link">About</a>
+          <a href="/contact" class="nav-link">Contact</a>
+        </div>
+        <div class="social-icons">
+          <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+        </div>
+        <div class="copyright">
+          © 2024 - Alter-Consult LLC
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

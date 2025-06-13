@@ -1,0 +1,14 @@
+<div class="services-grid">
+  {% for row in rows %}
+    <div class="service-card">
+      <div class="service-icon">
+        <i class="{{ row.content['#row'].field_service_icon }}"></i>
+      </div>
+      <h3>{{ row.content['#row'].title }}</h3>
+      <div class="service-description">
+        {{ row.content['#row'].body }}
+      </div>
+      <a href="/contact" class="btn-primary">Get in Touch</a>
+    </div>
+  {% endfor %}
+</div>

@@ -1,0 +1,8 @@
+<div class="account-menu">
+  {% if logged_in %}
+    <a href="/user" class="nav-link">My Account</a>
+    <a href="/user/logout" class="nav-link">Logout</a>
+  {% else %}
+    <a href="/user/login" class="nav-link">Login</a>
+  {% endif %}
+</div>

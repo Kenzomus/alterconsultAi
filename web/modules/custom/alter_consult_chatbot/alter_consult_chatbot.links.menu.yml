@@ -1,0 +1,6 @@
+alter_consult_chatbot.dashboard:
+  title: 'Chatbot Dashboard'
+  description: 'View chatbot statistics and recent conversations'
+  parent: system.admin_reports
+  route_name: alter_consult_chatbot.dashboard
+  weight: 100

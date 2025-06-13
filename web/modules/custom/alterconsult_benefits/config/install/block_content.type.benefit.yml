@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+id: benefit
+label: 'Benefit'
+description: 'A block type for the Why Choose Us carousel.'
+revision: 1

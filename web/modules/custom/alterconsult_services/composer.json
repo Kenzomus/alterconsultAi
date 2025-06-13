@@ -1,0 +1,9 @@
+{
+    "name": "alterconsult/alterconsult_services",
+    "type": "drupal-module",
+    "description": "Services module for Alter Consult",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "drupal/core": "^11.0"
+    }
+}

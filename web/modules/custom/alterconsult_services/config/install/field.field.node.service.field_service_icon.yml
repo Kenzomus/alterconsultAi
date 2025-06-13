@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  field:
+    - node.service.field_service_icon
+  field.storage:
+    - node.field_service_icon
+  module:
+    - text
+id: node.service.field_service_icon
+field_name: field_service_icon
+entity_type: node
+bundle: service
+label: 'Service Icon'
+description: 'Icon class or identifier for the service'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  max_length: 255
+  case_sensitive: false
+field_type: string

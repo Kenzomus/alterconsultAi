@@ -1,0 +1,7 @@
+alter_consult_chatbot.dashboard:
+  path: '/admin/reports/chatbot-dashboard'
+  defaults:
+    _controller: '\Drupal\alter_consult_chatbot\Controller\ChatbotDashboardController::dashboard'
+    _title: 'Chatbot Dashboard'
+  requirements:
+    _permission: 'access chatbot conversations'
