@@ -209,6 +209,13 @@ jobs:
             exit 1
           fi
 
+          echo "Debugging SSH Agent before push:"
+          echo "SSH_AUTH_SOCK: $SSH_AUTH_SOCK"
+          ssh-add -l || true # List loaded keys, `true` to prevent step failure if no keys
+
+          echo "Attempting verbose SSH connection to Pantheon:"
+          ssh -vT codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in -p 2222 || true
+
           echo "Adding Pantheon remote..."
           git remote remove pantheon || true
           git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
