@@ -54,6 +54,10 @@ jobs:
           which php
           composer --version
           which composer
+          echo "Checking web/modules/custom directory before composer install:"
+          ls -la web/modules/custom
+          echo "Checking web/themes/custom directory before composer install:"
+          ls -la web/themes/custom
           /usr/bin/php8.3 /usr/local/bin/composer install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-plugins
 
       - name: Run PHPUnit tests
