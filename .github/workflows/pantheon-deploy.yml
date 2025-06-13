@@ -17,7 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: true
 
       - name: Clean up Composer environment
         run: |
@@ -54,6 +54,9 @@ jobs:
           which php
           composer --version
           which composer
+          # Ensure custom module and theme directories exist before composer install
+          mkdir -p web/modules/custom
+          mkdir -p web/themes/custom
           echo "Checking web/modules/custom directory before composer install:"
           ls -la web/modules/custom
           echo "Checking web/themes/custom directory before composer install:"
@@ -82,7 +85,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: true
 
       - name: Clean up Composer environment
         run: |
