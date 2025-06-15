@@ -187,6 +187,10 @@ jobs:
 
           echo "Contents of TEMP_DIR after rsync and cd:"
           ls -al
+          echo "Contents of web/modules/custom in TEMP_DIR:"
+          ls -la web/modules/custom || true
+          echo "Contents of web/themes/custom in TEMP_DIR:"
+          ls -la web/themes/custom || true
 
           echo "Initializing git repository..."
           git init
