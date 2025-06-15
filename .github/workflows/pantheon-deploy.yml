@@ -298,9 +298,3 @@ jobs:
             echo "\nReading alter_consult_chatbot.module:\n";
             system("cat /app/web/modules/custom/alter_consult_chatbot/alter_consult_chatbot.module");
           ' || echo "File structure check failed but continuing..."
-
-          echo "Verifying module installation status..."
-          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- pm-list --type=module --status=enabled --format=table || echo "Module status check failed but continuing..."
-
-          echo "Verifying theme installation status..."
-          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- pm-list --type=theme --status=enabled --format=table || echo "Theme status check failed but continuing..."
