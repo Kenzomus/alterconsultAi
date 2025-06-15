@@ -295,6 +295,10 @@ jobs:
             system("ls -la /app/config/sync/");
             echo "\nChecking web/sites/default directory and settings.php permissions:\n";
             system("ls -la /app/web/sites/default/");
+            echo "\nReading alter_consult_chatbot.info.yml:\n";
+            system("cat /app/web/modules/custom/alter_consult_chatbot/alter_consult_chatbot.info.yml");
+            echo "\nReading alter_consult_chatbot.module:\n";
+            system("cat /app/web/modules/custom/alter_consult_chatbot/alter_consult_chatbot.module");
           ' || echo "File structure check failed but continuing..."
 
           echo "Verifying module installation status..."
