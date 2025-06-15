@@ -10,11 +10,17 @@
         },
         {
             "type": "path",
-            "url": "web/modules/custom/*"
+            "url": "web/modules/custom/*",
+            "options": {
+                "symlink": false
+            }
         },
         {
             "type": "path",
-            "url": "web/themes/custom/*"
+            "url": "web/themes/custom/*",
+            "options": {
+                "symlink": false
+            }
         }
     ],
     "require": {

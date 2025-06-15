@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2464d947dd47bf8a9d97494b74f557d0",
+    "content-hash": "d4b5402f75255f1df45e09786d6e041d",
     "packages": [
         {
             "name": "alterconsult/alter_consult_chatbot",
@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "web/modules/custom/alter_consult_chatbot",
-                "reference": "6bd88d128cdd629d513933d0e0b0885978ac2a07"
+                "reference": "a0af4c501b0a7a473e3ce450138f63320fbd050f"
             },
             "require": {
                 "drupal/core": "^11.0"
@@ -23,6 +23,7 @@
             ],
             "description": "Custom chatbot module for Alter Consult",
             "transport-options": {
+                "symlink": false,
                 "relative": true
             }
         },
@@ -32,7 +33,7 @@
             "dist": {
                 "type": "path",
                 "url": "web/themes/custom/alterconsult",
-                "reference": "73a7061aa2b2ea256d49cd272c9290b59b2801ab"
+                "reference": "92f1dd8e7369cc3d7ee208c7b457b0e6a536d65e"
             },
             "require": {
                 "drupal/core": "^11.0"
@@ -43,6 +44,7 @@
             ],
             "description": "Custom theme for Alter Consult",
             "transport-options": {
+                "symlink": false,
                 "relative": true
             }
         },
@@ -52,7 +54,7 @@
             "dist": {
                 "type": "path",
                 "url": "web/modules/custom/alterconsult_benefits",
-                "reference": "93d7bc959dbbd8af0145f46e7ecb36d56899af09"
+                "reference": "23fb6ef031be09ff9d114729ee7f7c6b9f833131"
             },
             "require": {
                 "drupal/core": "^11.0"
@@ -63,6 +65,7 @@
             ],
             "description": "Benefits module for Alter Consult",
             "transport-options": {
+                "symlink": false,
                 "relative": true
             }
         },
@@ -72,7 +75,7 @@
             "dist": {
                 "type": "path",
                 "url": "web/modules/custom/alterconsult_services",
-                "reference": "7abcc96abb7213163ef71ab3bddf0456d920d917"
+                "reference": "eaecc791565f62dd3194ac34054157eddf5efda4"
             },
             "require": {
                 "drupal/core": "^11.0"
@@ -83,6 +86,7 @@
             ],
             "description": "Services module for Alter Consult",
             "transport-options": {
+                "symlink": false,
                 "relative": true
             }
         },
