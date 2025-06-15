@@ -25,17 +25,18 @@ jobs:
           rm -f composer.lock
           rm -rf /home/runner/.cache/composer
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, xml, curl, gd, intl, mysql, pdo, zip, opcache, imagick, gmp, ldap, apcu, soap, bcmath, exif, ftp, gettext, xmlrpc, sqlite3, pgsql, redis
-          tools: composer
-          coverage: none
-
-      - name: Verify PHP Version
+      - name: Install PHP 8.3 and extensions manually
         run: |
-          echo "Verifying PHP version after Setup PHP:";
+          sudo apt update
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository -y ppa:ondrej/php
+          sudo apt update
+          sudo apt install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo php8.3-xmlrpc php8.3-sqlite3 php8.3-pgsql php8.3-redis php8.3-imagick php8.3-gmp php8.3-ldap php8.3-apcu
+          sudo update-alternatives --set php /usr/bin/php8.3
+          # Explicitly ensure the php command points to php8.3 by creating a symlink
+          sudo rm -f /usr/local/bin/php
+          sudo ln -s /usr/bin/php8.3 /usr/local/bin/php
+          echo "Verifying PHP version after manual setup:"
           php -v
           which php
 
@@ -54,13 +55,6 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          # Explicitly set PATH to prioritize PHP 8.3
-          export PATH="/opt/php/8.3/bin:$PATH"
-          echo "Debugging PHP and Composer versions within Install Dependencies step (after PATH set):"
-          php -v
-          which php
-          composer --version
-          which composer
           # Ensure custom module and theme directories exist before composer install
           mkdir -p web/modules/custom
           mkdir -p web/themes/custom
@@ -106,17 +100,18 @@ jobs:
           sudo apt upgrade -y
           sudo apt clean
 
-      - name: Setup PHP (Deploy Job)
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, xml, curl, gd, intl, mysql, pdo, zip, opcache, imagick, gmp, ldap, apcu, soap, bcmath, exif, ftp, gettext, xmlrpc, sqlite3, pgsql, redis
-          tools: composer
-          coverage: none
-
-      - name: Verify PHP Version (Deploy Job)
+      - name: Install PHP 8.3 and extensions manually (Deploy Job)
         run: |
-          echo "Verifying PHP version after Setup PHP (Deploy Job):";
+          sudo apt update
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository -y ppa:ondrej/php
+          sudo apt update
+          sudo apt install -y php8.3 php8.3-cli php8.3-common php8.3-curl php8.3-gd php8.3-intl php8.3-mbstring php8.3-mysql php8.3-opcache php8.3-xml php8.3-zip php8.3-soap php8.3-bcmath php8.3-exif php8.3-ftp php8.3-gettext php8.3-pdo php8.3-xmlrpc php8.3-sqlite3 php8.3-pgsql php8.3-redis php8.3-imagick php8.3-gmp php8.3-ldap php8.3-apcu
+          sudo update-alternatives --set php /usr/bin/php8.3
+          # Explicitly ensure the php command points to php8.3 by creating a symlink
+          sudo rm -f /usr/local/bin/php
+          sudo ln -s /usr/bin/php8.3 /usr/local/bin/php
+          echo "Verifying PHP version after manual setup (Deploy Job):"
           php -v
           which php
 
@@ -135,13 +130,6 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          # Explicitly set PATH to prioritize PHP 8.3
-          export PATH="/opt/php/8.3/bin:$PATH"
-          echo "Debugging PHP and Composer versions within Install Dependencies step (Deploy Job):"
-          php -v
-          which php
-          composer --version
-          which composer
           /usr/bin/php8.3 /usr/local/bin/composer install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-plugins
 
       - name: Set up Terminus
