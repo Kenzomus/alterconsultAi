@@ -2,7 +2,7 @@ name: Alter Consult Chatbot
 type: module
 description: 'AI-powered chatbot for collecting project information and providing estimates.'
 package: Custom
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^10 || ^11
 dependencies:
   - drupal:node
   - drupal:user

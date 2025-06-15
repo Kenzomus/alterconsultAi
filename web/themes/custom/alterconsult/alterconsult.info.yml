@@ -2,7 +2,7 @@ name: AlterConsult
 type: theme
 base theme: claro
 description: 'Custom theme for Alter-Consult.com website'
-core_version_requirement: ^11
+core_version_requirement: ^10 || ^11
 libraries:
   - alterconsult/global-styling
   - alterconsult/global-scripts

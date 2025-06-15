@@ -2,7 +2,7 @@ name: AlterConsult Services
 type: module
 description: 'Provides content types and views for Alter-Consult services'
 package: AlterConsult
-core_version_requirement: ^11
+core_version_requirement: ^10 || ^11
 dependencies:
   - drupal:node
   - drupal:views
