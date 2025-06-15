@@ -37,7 +37,8 @@
         "alterconsult/alter_consult_chatbot": "*",
         "alterconsult/alterconsult_benefits": "*",
         "alterconsult/alterconsult_services": "*",
-        "alterconsult/alterconsult": "*"
+        "alterconsult/alterconsult": "*",
+        "pantheon-systems/terminus": "^4.0"
     },
     "require-dev": {
         "drupal/core-dev": "^11.0",

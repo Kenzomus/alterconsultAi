@@ -94,7 +94,6 @@ jobs:
         PANTHEON_SITE_UUID: ${{ secrets.PANTHEON_SITE_UUID }}
         PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
       run: |
-        /usr/bin/php8.3 /usr/local/bin/composer require pantheon-systems/terminus
         ./vendor/bin/terminus auth:login --machine-token=$PANTHEON_MACHINE_TOKEN
         ./vendor/bin/terminus build:env:push $PANTHEON_SITE_UUID.dev
 
