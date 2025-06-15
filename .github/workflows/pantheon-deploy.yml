@@ -33,6 +33,12 @@ jobs:
           tools: composer
           coverage: none
 
+      - name: Verify PHP Version
+        run: |
+          echo "Verifying PHP version after Setup PHP:";
+          php -v
+          which php
+
       - name: Prepare Composer
         run: |
           curl -sS https://getcomposer.org/installer | /usr/bin/php8.3 -- --install-dir=/usr/local/bin --filename=composer
@@ -48,7 +54,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          echo "Debugging PHP and Composer versions within Install Dependencies step:"
+          # Explicitly set PATH to prioritize PHP 8.3
+          export PATH="/opt/php/8.3/bin:$PATH"
+          echo "Debugging PHP and Composer versions within Install Dependencies step (after PATH set):"
           php -v
           which php
           composer --version
@@ -106,6 +114,12 @@ jobs:
           tools: composer
           coverage: none
 
+      - name: Verify PHP Version (Deploy Job)
+        run: |
+          echo "Verifying PHP version after Setup PHP (Deploy Job):";
+          php -v
+          which php
+
       - name: Prepare Composer (Deploy Job)
         run: |
           curl -sS https://getcomposer.org/installer | /usr/bin/php8.3 -- --install-dir=/usr/local/bin --filename=composer
@@ -120,7 +134,15 @@ jobs:
         run: /usr/bin/php8.3 /usr/local/bin/composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
       - name: Install Dependencies
-        run: /usr/bin/php8.3 /usr/local/bin/composer install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-plugins
+        run: |
+          # Explicitly set PATH to prioritize PHP 8.3
+          export PATH="/opt/php/8.3/bin:$PATH"
+          echo "Debugging PHP and Composer versions within Install Dependencies step (Deploy Job):"
+          php -v
+          which php
+          composer --version
+          which composer
+          /usr/bin/php8.3 /usr/local/bin/composer install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-plugins
 
       - name: Set up Terminus
         run: |
