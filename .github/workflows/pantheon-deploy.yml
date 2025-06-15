@@ -293,6 +293,8 @@ jobs:
             system("ls -la /app/web/core/modules/system/src/Controller/");
             echo "\nChecking config/sync directory:\n";
             system("ls -la /app/config/sync/");
+            echo "\nChecking web/sites/default directory and settings.php permissions:\n";
+            system("ls -la /app/web/sites/default/");
           ' || echo "File structure check failed but continuing..."
 
           echo "Verifying module installation status..."
