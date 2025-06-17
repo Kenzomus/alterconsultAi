@@ -1,8 +1,0 @@
-name: AlterConsult Benefits
-type: module
-description: 'Provides a custom block type for the Why Choose Us carousel.'
-package: AlterConsult
-core_version_requirement: ^10 || ^11
-dependencies:
-  - drupal:block
-  - drupal:block_content

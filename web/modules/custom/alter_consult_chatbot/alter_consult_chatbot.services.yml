@@ -1,7 +1,0 @@
-services:
-  alter_consult_chatbot.openai:
-    class: Drupal\alter_consult_chatbot\Service\OpenAIService
-    arguments: ['@http_client', '@config.factory', '@logger.factory']
-  alter_consult_chatbot.project_estimation:
-    class: Drupal\alter_consult_chatbot\Service\ProjectEstimationService
-    arguments: ['@http_client', '@config.factory', '@logger.factory']
