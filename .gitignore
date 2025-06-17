@@ -1,8 +1,7 @@
 # Drupal specific
 /vendor/
 /web/core/
-/web/modules/contrib/
-/web/themes/contrib/
+
 /web/libraries/
 /web/sites/*/files/
 /web/sites/*/private/
