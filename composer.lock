@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4b5402f75255f1df45e09786d6e041d",
+    "content-hash": "7fb55c73e2f9703e0b1cc2060d789720",
     "packages": [
         {
             "name": "alterconsult/alter_consult_chatbot",
