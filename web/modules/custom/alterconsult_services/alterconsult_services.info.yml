@@ -1,0 +1,5 @@
+name: 'Alterconsult Services'
+type: module
+core_version_requirement: ^11
+description: 'Custom services module.'
+package: Custom

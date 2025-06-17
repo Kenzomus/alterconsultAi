@@ -1,0 +1,6 @@
+name: 'Alterconsult'
+type: theme
+core_version_requirement: ^11
+base theme: classy
+description: 'Custom theme for Alterconsult.'
+package: Custom

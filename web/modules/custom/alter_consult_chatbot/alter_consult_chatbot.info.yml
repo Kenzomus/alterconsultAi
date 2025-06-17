@@ -1,0 +1,5 @@
+name: 'Alter Consult Chatbot'
+type: module
+core_version_requirement: ^11
+description: 'Custom chatbot module.'
+package: Custom

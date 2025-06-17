@@ -1,0 +1,5 @@
+name: 'Alterconsult Benefits'
+type: module
+core_version_requirement: ^11
+description: 'Custom benefits module.'
+package: Custom
