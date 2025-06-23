@@ -94,8 +94,8 @@ jobs:
         PANTHEON_SITE_UUID: ${{ secrets.PANTHEON_SITE_UUID }}
         PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
       run: |
-        ./vendor/bin/terminus auth:login --machine-token=$PANTHEON_MACHINE_TOKEN
-        ./vendor/bin/terminus build:env:push $PANTHEON_SITE_UUID.dev
+        /usr/local/bin/terminus auth:login --machine-token=$PANTHEON_MACHINE_TOKEN
+        /usr/local/bin/terminus build:env:push $PANTHEON_SITE_UUID.dev
 
     - name: Deploy to Acquia
       if: env.ACQUIA_KEY != ''
