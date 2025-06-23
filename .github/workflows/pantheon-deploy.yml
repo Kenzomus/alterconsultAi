@@ -253,7 +253,6 @@ jobs:
         run: |
           terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cr -y
           terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- updatedb -y
-          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- config:import -y
         env:
           TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
@@ -262,9 +261,6 @@ jobs:
           set -x
           echo "Running database updates..."
           /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- updb -y || echo "Database updates failed but continuing..."
-
-          echo "Importing configuration..."
-          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- cim -y || echo "Config import failed but continuing..."
 
           echo "Clearing cache..."
           /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- cr || echo "Cache clear failed but continuing..."
