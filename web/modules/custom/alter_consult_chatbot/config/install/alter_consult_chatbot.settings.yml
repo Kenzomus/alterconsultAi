@@ -1,0 +1,15 @@
+services:
+  - name: 'Web Development'
+    description: 'Full-cycle web development services.'
+    price: 5000
+  - name: 'Mobile App Development'
+    description: 'Custom mobile application development for iOS and Android.'
+    price: 8000
+  - name: 'IT Consulting'
+    description: 'Strategic IT consulting to improve your business operations.'
+    price: 2000
+  - name: 'Cloud Services'
+    description: 'Migration, management, and optimization of cloud infrastructure.'
+    price: 3000
+
+market_price_multiplier: 1.2

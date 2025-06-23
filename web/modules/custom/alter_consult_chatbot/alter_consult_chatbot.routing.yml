@@ -1,0 +1,8 @@
+alter_consult_chatbot.message:
+  path: '/chatbot/message'
+  defaults:
+    _controller: '\Drupal\alter_consult_chatbot\Controller\ChatbotController::handleMessage'
+    _title: 'Chatbot Message'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'

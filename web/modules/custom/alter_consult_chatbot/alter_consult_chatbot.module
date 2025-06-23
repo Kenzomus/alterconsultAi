@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Primary module file for the Alter Consult Chatbot module.
+ */
+
+use Drupal\Core\Render\Element;
+
+/**
+ * Implements hook_page_attachments().
+ */
+function alter_consult_chatbot_page_attachments(array &$attachments) {
+  $attachments['#attached']['library'][] = 'alter_consult_chatbot/chatbot';
+}
