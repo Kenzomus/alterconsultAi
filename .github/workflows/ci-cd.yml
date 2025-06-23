@@ -88,6 +88,12 @@ jobs:
     - name: Install Composer Dependencies
       run: /usr/bin/php8.3 /usr/local/bin/composer install --prefer-dist --no-dev --optimize-autoloader
 
+    - name: Install Terminus
+      run: |
+        curl -L -f -O https://github.com/pantheon-systems/terminus/releases/download/4.0.1/terminus.phar
+        chmod +x terminus.phar
+        sudo mv terminus.phar /usr/local/bin/terminus
+
     - name: Deploy to Pantheon
       if: env.PANTHEON_SITE_UUID != ''
       env:
