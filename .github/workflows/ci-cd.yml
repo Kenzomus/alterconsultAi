@@ -101,7 +101,6 @@ jobs:
         PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
       run: |
         /usr/local/bin/terminus auth:login --machine-token=$PANTHEON_MACHINE_TOKEN
-        /usr/local/bin/terminus build:env:push $PANTHEON_SITE_UUID.dev
         /usr/local/bin/terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- pm:enable alter_consult_chatbot -y
 
     - name: Deploy to Acquia
