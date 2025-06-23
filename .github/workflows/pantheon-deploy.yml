@@ -252,7 +252,6 @@ jobs:
       - name: Run Post-Deployment Drupal Commands
         run: |
           terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- cr -y
-          terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- pm:enable alter_consult_chatbot -y
           terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- updatedb -y
           terminus drush ${{ secrets.PANTHEON_SITE }}.dev -- config:import -y
         env:
@@ -261,7 +260,6 @@ jobs:
       - name: Run database updates and configuration import
         run: |
           set -x
-          /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- pm:enable alter_consult_chatbot -y || echo "Chatbot module enable failed but continuing..."
           echo "Running database updates..."
           /usr/bin/php8.3 $(which terminus) drush ${{ secrets.PANTHEON_SITE }}.dev -- updb -y || echo "Database updates failed but continuing..."
 
