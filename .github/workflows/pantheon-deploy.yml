@@ -169,7 +169,8 @@ jobs:
           echo "Finished adding Pantheon SSH host keys."
 
       - name: Authenticate with Pantheon
-        run: terminus auth:login --machine-token=${{ secrets.PANTHEON_MACHINE_TOKEN }}
+        run: |
+          /usr/local/bin/terminus auth:login --machine-token=$PANTHEON_MACHINE_TOKEN
         env:
           TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
 
