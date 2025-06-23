@@ -1,6 +1,4 @@
 name: 'Alter Consult Chatbot'
 type: module
-core_version_requirement: ^10 || ^11
-description: 'A chatbot for Alter Consult.'
+core_version_requirement: ^11
 package: Custom
-version: 1.0.0
