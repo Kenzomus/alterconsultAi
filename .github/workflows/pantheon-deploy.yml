@@ -130,7 +130,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          /usr/bin/php8.3 /usr/local/bin/composer install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-plugins
+          /usr/bin/php8.3 /usr/local/bin/composer install --prefer-dist --no-progress --no-ansi --ignore-platform-reqs --no-dev
 
       - name: Set up Terminus
         run: |
