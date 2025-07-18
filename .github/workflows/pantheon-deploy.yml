@@ -170,9 +170,10 @@ jobs:
 
       - name: Authenticate with Pantheon
         run: |
-          /usr/local/bin/terminus auth:login --machine-token=$PANTHEON_MACHINE_TOKEN
+          terminus auth:login --machine-token="$PANTHEON_MACHINE_TOKEN"
         env:
           TERMINUS_ALLOW_UNSUPPORTED_NEWER_PHP: 1
+          PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
 
       - name: Deploy code to Pantheon using Terminus
         run: |

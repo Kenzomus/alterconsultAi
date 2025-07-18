@@ -100,7 +100,7 @@ jobs:
         PANTHEON_SITE_UUID: ${{ secrets.PANTHEON_SITE_UUID }}
         PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
       run: |
-        /usr/local/bin/terminus auth:login --machine-token=$PANTHEON_MACHINE_TOKEN
+        terminus auth:login --machine-token="$PANTHEON_MACHINE_TOKEN"
 
     - name: Deploy to Acquia
       if: env.ACQUIA_KEY != ''
