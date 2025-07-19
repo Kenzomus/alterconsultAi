@@ -198,6 +198,18 @@ jobs:
           echo "Contents of web/themes/custom:"
           ls -la web/themes/custom || echo "web/themes/custom does not exist"
 
+          echo "Ensuring custom modules are properly tracked..."
+          git add web/modules/custom/ || echo "No custom modules to add"
+          git add web/themes/custom/ || echo "No custom themes to add"
+
+          # Commit any untracked files
+          if ! git diff-index --quiet HEAD --; then
+            echo "Committing untracked files..."
+            git config user.email "github-actions@github.com"
+            git config user.name "GitHub Actions"
+            git commit -m "Add custom modules and themes"
+          fi
+
           echo "Adding Pantheon as a remote..."
           git remote remove pantheon || true
           git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
