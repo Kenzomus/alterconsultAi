@@ -185,79 +185,28 @@ jobs:
 
       - name: Deploy code to Pantheon using Terminus
         run: |
+          echo "Setting Pantheon connection to Git mode..."
           /usr/bin/php8.3 $(which terminus) connection:set ${{ secrets.PANTHEON_SITE }}.dev git
 
-          echo "Creating a temporary directory for the deployment..."
-          TEMP_DIR=$(mktemp -d)
-          rsync -av --exclude='.git/' --exclude='.github/' ./ $TEMP_DIR/
-          cd $TEMP_DIR
+          echo "Checking current directory structure..."
+          echo "Contents of current directory:"
+          ls -la
+          echo "Contents of web/modules/custom:"
+          ls -la web/modules/custom || echo "web/modules/custom does not exist"
+          echo "Contents of web/themes/custom:"
+          ls -la web/themes/custom || echo "web/themes/custom does not exist"
 
-          echo "Contents of TEMP_DIR after rsync and cd:"
-          ls -al
-          echo "Contents of web/modules/custom in TEMP_DIR:"
-          ls -la web/modules/custom || true
-          echo "Contents of web/themes/custom in TEMP_DIR:"
-          ls -la web/themes/custom || true
-
-          echo "Initializing git repository..."
-          git init
-          echo "git init exit code: $?"
-          git checkout -b main
-          echo "git checkout -b main exit code: $?"
-
-          git add .
-          echo "git add exit code: $?"
-
-          git config user.email "github-actions@github.com"
-          git config user.name "GitHub Actions"
-
-          git commit -m "Deploy from GitHub Actions"
-          COMMIT_EXIT_CODE=$?
-          echo "git commit exit code: $COMMIT_EXIT_CODE"
-
-          if [ "$COMMIT_EXIT_CODE" -ne 0 ]; then
-            echo "Error: git commit failed with exit code $COMMIT_EXIT_CODE. This might be why 'main' branch is not found." >&2
-            exit 1
-          fi
-
-          echo "Local repository status before push:"
-          git status
-          echo "Local repository log before push:"
-          git log --oneline
-          echo "Local branches before push:"
-          git branch -a
-          echo "Current HEAD ref:"
-          git rev-parse HEAD || true
-          echo "Git Reflog:"
-          git reflog
-
-          HEAD_SHA=$(git rev-parse HEAD)
-          echo "Resolved HEAD SHA: $HEAD_SHA"
-
-          if [ -z "$HEAD_SHA" ]; then
-            echo "Error: Could not resolve HEAD to a SHA. Aborting push." >&2
-            exit 1
-          fi
-
-          echo "Adding Pantheon remote..."
+          echo "Adding Pantheon as a remote..."
           git remote remove pantheon || true
           git remote add pantheon ssh://codeserver.dev.${{ secrets.PANTHEON_SITE }}@codeserver.dev.${{ secrets.PANTHEON_SITE }}.drush.in:2222/~/repository.git
 
+          echo "Current git status:"
+          git status
+          echo "Current git log (last 5 commits):"
+          git log --oneline -5
+
           echo "Pushing to Pantheon..."
-          for i in {1..3}; do
-            echo "Push attempt $i..."
-            if git push pantheon $HEAD_SHA:master --force; then
-              echo "Push successful!"
-              break
-            else
-              echo "Push attempt $i failed"
-              if [ $i -eq 3 ]; then
-                echo "All push attempts failed"
-                exit 1
-              fi
-              sleep 5
-            fi
-          done
+          git push pantheon main:master --force
 
       - name: Run Post-Deployment Drupal Commands
         run: |
