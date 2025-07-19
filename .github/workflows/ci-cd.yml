@@ -100,6 +100,14 @@ jobs:
         PANTHEON_SITE_UUID: ${{ secrets.PANTHEON_SITE_UUID }}
         PANTHEON_MACHINE_TOKEN: ${{ secrets.PANTHEON_MACHINE_TOKEN }}
       run: |
+        echo "Checking if PANTHEON_MACHINE_TOKEN is set..."
+        if [ -z "$PANTHEON_MACHINE_TOKEN" ]; then
+          echo "ERROR: PANTHEON_MACHINE_TOKEN is empty or not set"
+          exit 1
+        else
+          echo "PANTHEON_MACHINE_TOKEN is set (length: ${#PANTHEON_MACHINE_TOKEN})"
+        fi
+        echo "Attempting to authenticate with Pantheon..."
         terminus auth:login --machine-token="$PANTHEON_MACHINE_TOKEN"
 
     - name: Deploy to Acquia
