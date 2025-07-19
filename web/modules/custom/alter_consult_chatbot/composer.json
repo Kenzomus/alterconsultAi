@@ -1,5 +1,5 @@
 {
-    "name": "alterconsult/alter_consult_chatbot",
+    "name": "drupal/alter_consult_chatbot",
     "type": "drupal-custom-module",
     "description": "Custom chatbot module for Alter Consult",
     "license": "GPL-2.0-or-later",

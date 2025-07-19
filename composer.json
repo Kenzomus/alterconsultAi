@@ -34,7 +34,7 @@
         "drupal/token": "^1.15",
         "drupal/pathauto": "^1.0 || ^2.0",
         "drupal/metatag": "^1.0 || ^2.0",
-        "alterconsult/alter_consult_chatbot": "*"
+        "drupal/alter_consult_chatbot": "*"
     },
     "require-dev": {
         "drupal/core-dev": "^11.0",
